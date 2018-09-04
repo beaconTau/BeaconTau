@@ -4,7 +4,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
-#include "nuphase.h"
+#include "beacon.h"
 #include <dirent.h>
 #include <errno.h>
 
@@ -32,9 +32,9 @@ namespace BeaconTau {
     int run;
     std::string base_dir;
     std::string run_dir;
-    std::vector<nuphase_event> events;
-    std::vector<nuphase_header> headers;
-    std::vector<nuphase_status> statuses;
+    std::vector<beacon_event> events;
+    std::vector<beacon_header> headers;
+    std::vector<beacon_status> statuses;
 
 
     std::vector<std::string> list_files (const std::string& dir)
@@ -70,8 +70,8 @@ namespace BeaconTau {
 	return 0;
       }
       while(retVal == 0){
-	events.emplace_back(nuphase_event());
-	retVal = nuphase_event_gzread(file, &events.back());
+	events.emplace_back(beacon_event());
+	retVal = beacon_event_gzread(file, &events.back());
 	if(retVal==0){
 	  numEvents++;	
 	}
@@ -94,8 +94,8 @@ namespace BeaconTau {
 	return 0;
       }      
       while(retVal == 0){
-	headers.emplace_back(nuphase_header());
-	retVal = nuphase_header_gzread(file, &headers.back());
+	headers.emplace_back(beacon_header());
+	retVal = beacon_header_gzread(file, &headers.back());
 	if(retVal==0){
 	  numEvents++;	
 	}
@@ -117,8 +117,8 @@ namespace BeaconTau {
 	return 0;
       }
       while(retVal == 0){
-	statuses.emplace_back(nuphase_status());
-	retVal = nuphase_status_gzread(file, &statuses.back());
+	statuses.emplace_back(beacon_status());
+	retVal = beacon_status_gzread(file, &statuses.back());
 	if(retVal==0){
 	  numEvents++;	
 	}
@@ -148,57 +148,57 @@ PYBIND11_MODULE(_BeaconTau, m) {
 
  
   // /**  Trigger types */ 
-  // typedef enum nuphase_trigger_type 
+  // typedef enum beacon_trigger_type 
   // {
   //  NP_TRIG_NONE,   //<! Triggered by nothing (should never happen but if it does it's a bad sign1) 
   //  NP_TRIG_SW,    //!< triggered by software (force trigger)  
   //  NP_TRIG_RF,    //!< triggered by input waveforms
   //  NP_TRIG_EXT    //!< triggered by external trigger 
-  // } nuphase_trig_type_t;
+  // } beacon_trig_type_t;
 
-  py::enum_<nuphase_trigger_type>(m,"TrigType")
-    .value("NP_TRIG_NONE", nuphase_trigger_type::NP_TRIG_NONE)
-    .value("NP_TRIG_SW",   nuphase_trigger_type::NP_TRIG_SW)
-    .value("NP_TRIG_RF",   nuphase_trigger_type::NP_TRIG_RF)
-    .value("NP_TRIG_EXT",  nuphase_trigger_type::NP_TRIG_EXT)
+  py::enum_<beacon_trigger_type>(m,"TrigType")
+    .value("NP_TRIG_NONE", beacon_trigger_type::BN_TRIG_NONE)
+    .value("NP_TRIG_SW",   beacon_trigger_type::BN_TRIG_SW)
+    .value("NP_TRIG_RF",   beacon_trigger_type::BN_TRIG_RF)
+    .value("NP_TRIG_EXT",  beacon_trigger_type::BN_TRIG_EXT)
     .export_values();  
 
 
-  py::enum_<nuphase_trigger_polarization>(m,"Pol")
-    .value("H", nuphase_trigger_polarization::H)
-    .value("V", nuphase_trigger_polarization::V)
+  py::enum_<beacon_trigger_polarization>(m,"Pol")
+    .value("H", beacon_trigger_polarization::H)
+    .value("V", beacon_trigger_polarization::V)
     .export_values();  
   
-  // typedef enum nuphase_trigger_polarization
+  // typedef enum beacon_trigger_polarization
   // {
   //  H = 0,
   //  V = 1
-  // } nuphase_trigger_polarization_t;
+  // } beacon_trigger_polarization_t;
   
-  py::class_<nuphase_header>(m, "Header")
+  py::class_<beacon_header>(m, "Header")
     .def(py::init<>())
-    .def_readonly("event_number",              &nuphase_header::event_number)
-    .def_readonly("trig_number",               &nuphase_header::trig_number)
-    .def_readonly("buffer_length",             &nuphase_header::buffer_length)
-    .def_readonly("pretrigger_samples",        &nuphase_header::pretrigger_samples)
-    .def_readonly("readout_time",              &nuphase_header::readout_time)
-    .def_readonly("approx_trigger_time",       &nuphase_header::approx_trigger_time)
-    .def_readonly("approx_trigger_time_nsecs", &nuphase_header::approx_trigger_time_nsecs)
-    .def_readonly("triggered_beams",           &nuphase_header::triggered_beams)
-    .def_readonly("beam_mask",                 &nuphase_header::beam_mask)
-    .def_readonly("beam_power",                &nuphase_header::beam_power)
-    .def_readonly("deadtime",                  &nuphase_header::deadtime)
-    .def_readonly("buffer_number",             &nuphase_header::buffer_number)
-    .def_readonly("channel_mask",              &nuphase_header::channel_mask)
-    .def_readonly("channel_read_mask",         &nuphase_header::channel_read_mask)
-    .def_readonly("gate_flag",                 &nuphase_header::gate_flag)
-    .def_readonly("buffer_mask",               &nuphase_header::buffer_mask)
-    .def_readonly("board_id",                  &nuphase_header::board_id)
-    .def_readonly("trig_type",                 &nuphase_header::trig_type)
-    .def_readonly("trig_pol",                  &nuphase_header::trig_pol)
-    .def_readonly("calpulser",                 &nuphase_header::calpulser)
-    .def_readonly("sync_problem",              &nuphase_header::sync_problem)
-    .def("__repr__", [](const nuphase_header &h) {
+    .def_readonly("event_number",              &beacon_header::event_number)
+    .def_readonly("trig_number",               &beacon_header::trig_number)
+    .def_readonly("buffer_length",             &beacon_header::buffer_length)
+    .def_readonly("pretrigger_samples",        &beacon_header::pretrigger_samples)
+    .def_readonly("readout_time",              &beacon_header::readout_time)
+    .def_readonly("approx_trigger_time",       &beacon_header::approx_trigger_time)
+    .def_readonly("approx_trigger_time_nsecs", &beacon_header::approx_trigger_time_nsecs)
+    .def_readonly("triggered_beams",           &beacon_header::triggered_beams)
+    .def_readonly("beam_mask",                 &beacon_header::beam_mask)
+    .def_readonly("beam_power",                &beacon_header::beam_power)
+    .def_readonly("deadtime",                  &beacon_header::deadtime)
+    .def_readonly("buffer_number",             &beacon_header::buffer_number)
+    .def_readonly("channel_mask",              &beacon_header::channel_mask)
+    .def_readonly("channel_read_mask",         &beacon_header::channel_read_mask)
+    .def_readonly("gate_flag",                 &beacon_header::gate_flag)
+    .def_readonly("buffer_mask",               &beacon_header::buffer_mask)
+    .def_readonly("board_id",                  &beacon_header::board_id)
+    .def_readonly("trig_type",                 &beacon_header::trig_type)
+    .def_readonly("trig_pol",                  &beacon_header::trig_pol)
+    .def_readonly("calpulser",                 &beacon_header::calpulser)
+    .def_readonly("sync_problem",              &beacon_header::sync_problem)
+    .def("__repr__", [](const beacon_header &h) {
 		       static std::string s;
 		       s = "<BeaconTau.Header " + std::to_string(h.event_number) + ">";
 		       return s;
@@ -206,14 +206,14 @@ PYBIND11_MODULE(_BeaconTau, m) {
 
 
 
-  py::class_<nuphase_event>(m, "Event")
+  py::class_<beacon_event>(m, "Event")
     .def(py::init<>())
     // .def("read", &BeaconTau::event::read)
-    .def_readonly("event_number",    &nuphase_event::event_number)
-    .def_readonly("buffer_length",   &nuphase_event::buffer_length)
-    .def_readonly("board_id",        &nuphase_event::board_id)
-    .def_readonly("data",            &nuphase_event::data)
-    .def("__repr__", [](const nuphase_event& e) {
+    .def_readonly("event_number",    &beacon_event::event_number)
+    .def_readonly("buffer_length",   &beacon_event::buffer_length)
+    .def_readonly("board_id",        &beacon_event::board_id)
+    .def_readonly("data",            &beacon_event::data)
+    .def("__repr__", [](const beacon_event& e) {
     		       static std::string s;
     		       s = "<BeaconTau.Event " + std::to_string(e.event_number) + ">";
     		       return s;
@@ -221,18 +221,18 @@ PYBIND11_MODULE(_BeaconTau, m) {
     ;
   
 
-  py::class_<nuphase_status>(m, "Status")
+  py::class_<beacon_status>(m, "Status")
     .def(py::init<>())
-    .def_readonly("global_scalars",     &nuphase_status::global_scalers)
-    .def_readonly("beam_scalers",       &nuphase_status::beam_scalers)
-    .def_readonly("deadtime",           &nuphase_status::deadtime)
-    .def_readonly("readout_time",       &nuphase_status::readout_time)
-    .def_readonly("readout_time_ns",    &nuphase_status::readout_time_ns)
-    .def_readonly("trigger_thresholds", &nuphase_status::trigger_thresholds)
-    .def_readonly("latched_pps_time",   &nuphase_status::latched_pps_time)
-    .def_readonly("board_id",           &nuphase_status::board_id)
-    .def_readonly("dynamic_beam_mask",  &nuphase_status::dynamic_beam_mask)
-    .def("__repr__", [](const nuphase_status& st){
+    .def_readonly("global_scalars",     &beacon_status::global_scalers)
+    .def_readonly("beam_scalers",       &beacon_status::beam_scalers)
+    .def_readonly("deadtime",           &beacon_status::deadtime)
+    .def_readonly("readout_time",       &beacon_status::readout_time)
+    .def_readonly("readout_time_ns",    &beacon_status::readout_time_ns)
+    .def_readonly("trigger_thresholds", &beacon_status::trigger_thresholds)
+    .def_readonly("latched_pps_time",   &beacon_status::latched_pps_time)
+    .def_readonly("board_id",           &beacon_status::board_id)
+    .def_readonly("dynamic_beam_mask",  &beacon_status::dynamic_beam_mask)
+    .def("__repr__", [](const beacon_status& st){
 		       static std::string s;
 		       
 		       s = "<Status at " + std::to_string(st.readout_time) + "."  + std::to_string(st.readout_time_ns) + ">";
