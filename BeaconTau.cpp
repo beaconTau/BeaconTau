@@ -10,7 +10,7 @@
 
 namespace py = pybind11;
 
-namespace pyBeacon {
+namespace BeaconTau {
 
   class RunReader {
   public:
@@ -136,7 +136,7 @@ namespace pyBeacon {
 
 
 
-PYBIND11_MODULE(_pyBeacon, m) {
+PYBIND11_MODULE(_BeaconTau, m) {
   m.doc() = "Python module for the BEACON experiment";
   
   // py::enum_<np_io_error_t>(m,"np_io_error_t")
@@ -200,7 +200,7 @@ PYBIND11_MODULE(_pyBeacon, m) {
     .def_readonly("sync_problem",              &nuphase_header::sync_problem)
     .def("__repr__", [](const nuphase_header &h) {
 		       static std::string s;
-		       s = "<pyBeacon.Header " + std::to_string(h.event_number) + ">";
+		       s = "<BeaconTau.Header " + std::to_string(h.event_number) + ">";
 		       return s;
 		     });
 
@@ -208,14 +208,14 @@ PYBIND11_MODULE(_pyBeacon, m) {
 
   py::class_<nuphase_event>(m, "Event")
     .def(py::init<>())
-    // .def("read", &pyBeacon::event::read)
+    // .def("read", &BeaconTau::event::read)
     .def_readonly("event_number",    &nuphase_event::event_number)
     .def_readonly("buffer_length",   &nuphase_event::buffer_length)
     .def_readonly("board_id",        &nuphase_event::board_id)
     .def_readonly("data",            &nuphase_event::data)
     .def("__repr__", [](const nuphase_event& e) {
     		       static std::string s;
-    		       s = "<pyBeacon.Event " + std::to_string(e.event_number) + ">";
+    		       s = "<BeaconTau.Event " + std::to_string(e.event_number) + ">";
     		       return s;
     		     })
     ;
@@ -239,16 +239,16 @@ PYBIND11_MODULE(_pyBeacon, m) {
 		       return s;
 		     });
 
-  py::class_<pyBeacon::RunReader>(m, "RunReader")
+  py::class_<BeaconTau::RunReader>(m, "RunReader")
     .def(py::init<int, const std::string&>())
-    .def("__repr__",  [](const pyBeacon::RunReader& r){
+    .def("__repr__",  [](const BeaconTau::RunReader& r){
 			static std::string s;
-			s = "<pyBeacon.RunReader for run " + std::to_string(r.run) + ">";
+			s = "<BeaconTau.RunReader for run " + std::to_string(r.run) + ">";
 			return s;
 		      })
-    .def_readonly("events", &pyBeacon::RunReader::events)
-    .def_readonly("headers", &pyBeacon::RunReader::headers)
-    .def_readonly("statuses", &pyBeacon::RunReader::statuses);  
+    .def_readonly("events", &BeaconTau::RunReader::events)
+    .def_readonly("headers", &BeaconTau::RunReader::headers)
+    .def_readonly("statuses", &BeaconTau::RunReader::statuses);  
   
 }
 

@@ -1,4 +1,4 @@
-import pyBeacon
+import BeaconTau
 from bokeh.plotting import figure, gridplot, curdoc
 from bokeh.models import ColumnDataSource
 
@@ -19,7 +19,7 @@ from scipy import signal
 from math import log10
 
 class Flame:
-    """(Facility for Live Action Monitoring of Events) The online event viewer for pyBeacon"""
+    """(Facility for Live Action Monitoring of Events) The online event viewer for BeaconTau"""
     def __init__(self):
         self.run = 99
         self.event_lines = {}
@@ -31,7 +31,7 @@ class Flame:
 
         self.dt = 2.0 #e-9 #ns 500 Mega Samples Per Second
 
-        self.reader = pyBeacon.RunReader(self.run, '../../../data')
+        self.reader = BeaconTau.RunReader(self.run, '../../../data')
         self.title_div = Div(text = "BEACON FLAME (Facility for Live Action Monitoring of Events)")
         self.header_div = Div(text = self.get_header_text())
         self.b_play = None
@@ -206,6 +206,6 @@ class Flame:
 if __name__ == '__main__':
     pass
 elif 'bk_script' in __name__:
-x    # Then this was called by bokeh serve
+    # Then this was called by bokeh serve
     # So we create an instance of the web viewer
     f = Flame()

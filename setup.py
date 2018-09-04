@@ -18,12 +18,12 @@ libnuphase_clone_dir = tempfile.TemporaryDirectory()
 libnuphase_version_tag = "0.1"
 
 
-class pyBeaconClean(clean):
+class BeaconTauClean(clean):
     def run(self):
         libnuphase_clone_dir.cleanup()
         clean.run(self)
 
-class pyBeaconBuild(build):
+class BeaconTauBuild(build):
     def run(self):
         # first we clone and build the required version of libnuphase.so
         clone_command = "git clone --branch v"+ libnuphase_version_tag + " https://github.com/beaconTau/libnuphase " + libnuphase_clone_dir.name
@@ -37,17 +37,17 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name="pyBeacon",
+    name="BeaconTau",
     version=libnuphase_version_tag, # try to keep these in sync
     author="Ben Strutt",
     author_email="strutt@physics.ucla.edu",
     description="A package for interacting with BEACON data in python",
     long_description=long_description,
     license='GPL3',
-    url="https://github.com/beaconTau/pyBeacon",
-    packages=['pyBeacon', 'pyBeacon/Flame'],
+    url="https://github.com/beaconTau/BeaconTau",
+    packages=['BeaconTau', 'BeaconTau/Flame'],
     ext_modules=[
-        Extension('_pyBeacon', ['pyBeacon.cpp',  libnuphase_clone_dir.name + '/nuphase.c'],
+        Extension('_BeaconTau', ['BeaconTau.cpp',  libnuphase_clone_dir.name + '/nuphase.c'],
                   include_dirs = [libnuphase_clone_dir.name, pybind11_include_dir],
                   library_dirs = ['/usr/local/lib' ],
                   libraries=['z'],
@@ -62,7 +62,7 @@ setup(
         "Operating System :: POSIX",
     ],
     cmdclass={
-        'build' : pyBeaconBuild,
-        'clean' : pyBeaconClean,
+        'build' : BeaconTauBuild,
+        'clean' : BeaconTauClean,
     }
 )

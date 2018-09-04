@@ -1,4 +1,4 @@
-from _pyBeacon import *
+from _BeaconTau import *
 import matplotlib.pyplot as plt
 
 #class Event(Event):
