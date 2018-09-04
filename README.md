@@ -16,5 +16,5 @@ I'm aiming to keep [libnuphase](https://github.com/beaconTau/libnuphase) version
 | Version | Notes                                              |
 |---------|----------------------------------------------------|
 | 0.1     | Working local implementation of pyBeacon and Flame |
-|---------|----------------------------------------------------|
+
 
