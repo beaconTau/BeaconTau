@@ -1,4 +1,4 @@
-# pyBeacon
+# BeaconTau
 
 A BEACON data analysis package for python3.
 
@@ -7,14 +7,17 @@ From there all the standard python loveliness is available.
 
 ## Flame (Facility for Live Action Monitoring of Events)
 
-A prototype online browser based event on pyBeacon and bokeh.
+A prototype online browser based event on BeaconTau and bokeh.
 
 ## Version history
 
-I'm aiming to keep [libnuphase](https://github.com/beaconTau/libnuphase) version tags in sync with pyBeacon version tags.
+I'm aiming to keep [libnuphase](https://github.com/beaconTau/libnuphase) version tags in sync with BeaconTau version tags.
 
-| Version | Notes                                              |
-|---------|----------------------------------------------------|
-| 0.1     | Working local implementation of pyBeacon and Flame |
+| Version | Notes                                               |
+|---------|-----------------------------------------------------|
+| 0.1.0   | Working local implementation of BeaconTau and Flame |
+| 0.1.1   | First working version on PyPI!                      |
+
+
 
 
