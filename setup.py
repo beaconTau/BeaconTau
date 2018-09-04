@@ -19,7 +19,7 @@ import pybind11
 
 pybind11_include_dir = pybind11.get_include()
 libnuphase_clone_dir = tempfile.TemporaryDirectory()
-libnuphase_version_tag = "0.1.2"
+libnuphase_version_tag = "0.1.3"
 
 
 class BeaconTauClean(clean):
@@ -55,6 +55,7 @@ setup(
                   include_dirs = [libnuphase_clone_dir.name, pybind11_include_dir],
                   library_dirs = ['/usr/local/lib' ],
                   libraries=['z'],
+                  extra_compile_args = ['-std=c++11']
                   )
     ],
     install_requires=[
