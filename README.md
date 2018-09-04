@@ -10,15 +10,19 @@ From there all the standard python loveliness is available.
 ### From PyPI
 
 Navigate to the directory you want to do some BEACON analysis in.
-Do `python3 -m venv BeaconTau-env`, which will setup a virtual environment.
-Activate that environment with `source BeaconTau-env/bin/activate`.
-Then do `pip install BeaconTau`.
+Do
+```bash
+python3 -m venv BeaconTau-env # Creates a virtual environment (you need only do this once)
+source BeaconTau-env/bin/activate # Load the virtual environment (do this once per terminal session)
+pip install BeaconTau # Install from PyPI (only need to do this once, unless upgrading)
+```
 From there start `python`
 
 ```python
 import BeaconTau
 ```
 And you should be good to go.
+Remember that you will need to do `source BeaconTau-env/bin/activate` each time you want to use this python module!
 
 
 ## Flame (Facility for Live Action Monitoring of Events)
