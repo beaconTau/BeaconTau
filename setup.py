@@ -11,11 +11,15 @@ from distutils.command.clean import clean
 
 import subprocess
 import tempfile
+
+
+subprocess.call(["pip", "install", "pybind11"])
+
 import pybind11
 
 pybind11_include_dir = pybind11.get_include()
 libnuphase_clone_dir = tempfile.TemporaryDirectory()
-libnuphase_version_tag = "0.1.1"
+libnuphase_version_tag = "0.1.2"
 
 
 class BeaconTauClean(clean):

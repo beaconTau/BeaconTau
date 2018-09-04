@@ -9,16 +9,6 @@ The current functionality is somewhat basic, the most glaring issue is that curr
 
 ## Installation
 
-### From PyPI with Anaconda
-**Warning: this method is as yet untested! Hopefully some more detailed documentation will arrive soon.***
-Following [these instructions](https://conda.io/docs/user-guide/tasks/manage-pkgs.html#installing-non-conda-packages).
-Make sure pip is installed in your current conda environment `conda install pip`.
-From there:
-
-```bash
-source activate BeaconTau-env # or whatever environment you desire
-pip install BeaconTau
-```
 
 
 ### From PyPI in a virtualenv
@@ -37,6 +27,20 @@ import BeaconTau
 ```
 And you should be good to go.
 Remember that you will need to do `source BeaconTau-env/bin/activate` each time you want to use this python module!
+
+
+
+### From PyPI with Anaconda
+**Warning: this method is as yet untested! Hopefully some more detailed documentation will arrive soon.***
+Following [these instructions](https://conda.io/docs/user-guide/tasks/manage-pkgs.html#installing-non-conda-packages).
+Make sure pip is installed in your current conda environment `conda install pip`.
+From there:
+
+```bash
+source activate BeaconTau-env # or whatever environment you desire
+pip install BeaconTau
+```
+
 
 
 ## Flame (Facility for Live Action Monitoring of Events)
