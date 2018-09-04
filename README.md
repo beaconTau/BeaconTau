@@ -2,7 +2,8 @@
 
 A BEACON data analysis package for python3.
 
-This package uses [pybind11](https://github.com/pybind/pybind11) to get the raw c-structs from [the BEACON fork of libnuphase](https://github.com/beaconTau/libnuphase) into python.
+This package uses [pybind11](https://github.com/pybind/pybind11) to get the raw c-structs from [the BEACON c-library](https://github.com/beaconTau/libbeacon) into python.
+This package calls the c backend to read binary data from disk into your python prompt.
 From there all the standard python loveliness is available.
 
 The current functionality is somewhat basic, the most glaring issue is that currently only the gzipped data files can be parsed by the RunReader.
@@ -49,12 +50,16 @@ A prototype online browser based event on BeaconTau and bokeh.
 
 ## Version history
 
-I'm aiming to keep [libnuphase](https://github.com/beaconTau/libnuphase) version tags in sync with BeaconTau version tags.
+I'm aiming to keep [libbeacon](https://github.com/beaconTau/libbeacon) version tags in sync with BeaconTau version tags.
 
-| Version | Notes                                               |
-|---------|-----------------------------------------------------|
-| 0.1.0   | Working local implementation of BeaconTau and Flame |
-| 0.1.1   | First working version on PyPI!                      |
+| Version | Notes                                                                                             |
+|---------|---------------------------------------------------------------------------------------------------|
+| 0.1.0   | Working local implementation of BeaconTau and Flame                                               |
+| 0.1.1   | First working version on PyPI!                                                                    |
+| 0.1.2   | Bug fix release: for pip install process, make sure pybind11 is installed before running setup.py |
+| 0.1.3   | Bug fix release: for pip install process, set std=c++11 for compiling against pybind              |
+| 0.1.4   | Track upstream changes, from libnuphase -> libbeacon                                              |
+
 
 
 
