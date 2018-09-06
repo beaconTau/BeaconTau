@@ -62,19 +62,22 @@ class EventAnalyzer():
             # TODO for multiple boards, maybe that's overkill...
             if axes is None:
                 fig, axes = plt.subplots(n_rows, n_cols, sharey = True, sharex = True)
+                mng = plt.get_current_fig_manager()
+                mng.resize(*mng.window.maxsize())
             for chan in range(len(board)):
                 axes.flat[chan].set_title('Channel ' + str(chan+1))
+                color = 'C' + str(chan) # matplotlib accepts strings beginning with a capital C for colors
                 if freq_domain is False:
-                    axes.flat[chan].plot(self.times(),  self.channel(chan))
+                    axes.flat[chan].plot(self.times(),  self.channel(chan), color)
                     axes.flat[chan].set_xlabel('Time (ns)')
                     axes.flat[chan].set_ylabel('Amplitude (mV)')
                 else:
                     axes.flat[chan].set_xlabel('Freq (MHz)')
                     if log_scale is True:
-                        axes.flat[chan].plot(self.freqs(), self.channel_psd_db(chan))
+                        axes.flat[chan].plot(self.freqs(), self.channel_psd_db(chan), color)
                         axes.flat[chan].set_ylabel('PSD (dB)')
                     else:
-                        axes.flat[chan].plot(self.freqs(), self.channel_psd(chan))
+                        axes.flat[chan].plot(self.freqs(), self.channel_psd(chan), color)
                         axes.flat[chan].set_ylabel('PSD (mV^{2} / MHz)')
             plt.suptitle('Event ' + str(self.event.event_number))
         if show is True:
