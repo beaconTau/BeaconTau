@@ -85,7 +85,10 @@ class EventAnalyzer():
 
 class RunAnalyzer():
     """
-    Wraps the file reading action from RunReader into something a bit more python friendly
+    Class for examining data in a run.
+    Can plot/scan any attribute in the Status/Header/Event files.
+    Can pull up individual events by event_number or entry.
+    Wraps the file reading action from RunReader into something a bit more python friendly.
     """
     def __init__(self, run, data_dir):
         self.run = run
@@ -121,7 +124,7 @@ class RunAnalyzer():
 
         return values
 
-    def draw(self, attribute, show = True):
+    def draw(self, attribute, show = False):
         values = self.cached_extract(attribute)
         if values is not None:
             fig = plt.figure()
@@ -135,6 +138,7 @@ class RunAnalyzer():
             plt.legend(lines, labels)
             if show is True:
                 plt.show()
+            return fig
 
     def scan(self, attribute):
         values = self.cached_extract(attribute)
@@ -149,6 +153,19 @@ class RunAnalyzer():
                     if len(keys) > 0 and keys[0] == 'q':
                         break
             print('Finished scanning ' + str(entries) + ' entries')
+
+
+    def get_entry(self, entry):
+        return EventAnalyzer(self.run_reader.headers[entry],  self.run_reader.events[entry])
+
+    def get_event(self, event_number):
+        event_numbers = self.cached_extract('event_number')
+        try:
+            entry = event_numbers.index(event_number)
+            return get_entry(entry)
+        except:
+            raise ValueError(str(event_number) + ' not found in run ' + str(self.run))
+            return None
 
 
 class DataDirectory():
@@ -190,7 +207,7 @@ class DataDirectory():
     def __next__(self):
         if self._i < len(self.runs):
             self._i += 1 # For next call to __next__
-            return RunReader(self.runs[self._i - 1], self.data_dir)
+            return RunAnalyzer(self.runs[self._i - 1], self.data_dir)
         else:
             raise StopIteration
 
@@ -201,24 +218,19 @@ class DataDirectory():
         except:
             raise ValueError('No run ' +  str(run_number) + ' in ' + self.data_dir + ', available runs are ' + str(self.runs))
 
-        return RunReader(run_number, self.data_dir)
+        return RunAnalyzer(run_number, self.data_dir)
 
 def main():
     d = DataDirectory()
 
-    # for r in d:
-    #     a = EventAnalyzer(r.headers[0],  r.events[0])
-    #     a.plot(show = True)
-    # plt.show()
-    # return 0;
+    for r in d:
+        for entry in range(3):
+            e = r.get_entry(entry)
+            e.plot()
+        r.draw('trigger_thresholds')
 
-    r = RunAnalyzer(99, '../../../data')
-    #r.draw('readout_time')
-    r.scan('readout_time')
-    #r.draw('global_scalars')
-    #r.draw('readout_time')
-    r.draw('trigger_thresholds')    
-    plt.show()
-
+plt.ion()
+plt.show()
 if __name__ == '__main__':
     main()
+
