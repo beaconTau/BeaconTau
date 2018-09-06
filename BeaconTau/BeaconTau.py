@@ -83,6 +83,38 @@ class EventAnalyzer():
         if show is True:
             plt.show()
 
+class RunAnalyzer():
+    """
+    Wraps the file reading action from RunReader into something a bit more python friendly
+    """
+    def __init__(self, run, data_dir):
+        self.run = run
+        self.run_reader = RunReader(run, data_dir)
+
+    def draw(self, attribute, show = True):
+        values = None
+        try:
+            values = [e.__getattribute__(attribute) for e in self.run_reader.events]
+        except:
+            try:
+                values = [h.__getattribute__(attribute) for h in self.run_reader.headers]
+            except:
+                try:
+                    values = [s.__getattribute__(attribute) for s in self.run_reader.statuses]
+                except:
+                    raise ValueError(attribute + ' is not something in BeaconTau.Status, BeaconTau.Header, or BeaconTau.Event!')
+
+        if values is not None:
+            fig = plt.figure()
+            mng = plt.get_current_fig_manager()
+            mng.resize(*mng.window.maxsize())
+            plt.xlabel('Entry')
+            plt.ylabel(attribute)
+            plt.title('Run ' + str(self.run))
+            plt.plot(values)
+            if show is True:
+                plt.show()
+
 
 class DataDirectory():
     """
@@ -139,25 +171,14 @@ class DataDirectory():
 def main():
     d = DataDirectory()
 
-    for r in d:
-        a = EventAnalyzer(r.headers[0],  r.events[0])
-        a.plot(show = True)
-    plt.show()
-    return 0;
+    # for r in d:
+    #     a = EventAnalyzer(r.headers[0],  r.events[0])
+    #     a.plot(show = True)
+    # plt.show()
+    # return 0;
 
-    r = RunReader(99, '../../data')
-
-    evs = [h.event_number for h in r.headers]
-    rot = [st.readout_time for st in r.statuses]
-    threshs = [st.trigger_thresholds for st in r.statuses]
-    threshs2 = list(map(list, zip(*threshs)))
-    plt.xlabel('Time (seconds)')
-    plt.ylabel('Threshold (???)')
-    plt.title('BEACON Thresholds')
-    for channel, t in enumerate(threshs2, 1):
-        plt.plot(rot, t, label = 'Channel' + str(channel))
-    plt.legend()
-
+    r = RunAnalyzer(99, '../../../data')
+    r.draw('readout_time')
     plt.show()
 
 if __name__ == '__main__':
