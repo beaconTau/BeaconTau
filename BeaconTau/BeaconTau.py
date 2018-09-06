@@ -90,8 +90,23 @@ class RunAnalyzer():
     def __init__(self, run, data_dir):
         self.run = run
         self.run_reader = RunReader(run, data_dir)
+        self.extracted_values = dict()
 
-    def draw(self, attribute, show = True):
+    def split_attribute(self, attribute):
+        attributes = attribute.split(':')
+        return attributes
+
+    def cached_extract(self, attribute):
+        if attribute in self.extracted_values:
+            return self.extracted_values[attribute]
+        else:
+            values = self.extract(attribute)
+            if values is not None:
+                self.extracted_values[attribute] = values
+            return values
+
+    def extract(self, attribute):
+
         values = None
         try:
             values = [e.__getattribute__(attribute) for e in self.run_reader.events]
@@ -104,6 +119,10 @@ class RunAnalyzer():
                 except:
                     raise ValueError(attribute + ' is not something in BeaconTau.Status, BeaconTau.Header, or BeaconTau.Event!')
 
+        return values
+
+    def draw(self, attribute, show = True):
+        values = self.cached_extract(attribute)
         if values is not None:
             fig = plt.figure()
             mng = plt.get_current_fig_manager()
@@ -111,9 +130,25 @@ class RunAnalyzer():
             plt.xlabel('Entry')
             plt.ylabel(attribute)
             plt.title('Run ' + str(self.run))
-            plt.plot(values)
+            lines = plt.plot(values)
+            labels = [attribute + '[' + str(c) + ']' for c in range(len(lines))]
+            plt.legend(lines, labels)
             if show is True:
                 plt.show()
+
+    def scan(self, attribute):
+        values = self.cached_extract(attribute)
+        if values is not None:
+            entries = 0
+            for entry, value in enumerate(values):
+                to_print = str(entry) + '\t' + str(value)
+                print(to_print)
+                entries += 1            
+                if entry > 0 and (entry+1) % 25 == 0:
+                    keys = input('Press q to quit: ')
+                    if len(keys) > 0 and keys[0] == 'q':
+                        break
+            print('Finished scanning ' + str(entries) + ' entries')
 
 
 class DataDirectory():
@@ -178,7 +213,11 @@ def main():
     # return 0;
 
     r = RunAnalyzer(99, '../../../data')
-    r.draw('readout_time')
+    #r.draw('readout_time')
+    r.scan('readout_time')
+    #r.draw('global_scalars')
+    #r.draw('readout_time')
+    r.draw('trigger_thresholds')    
     plt.show()
 
 if __name__ == '__main__':
