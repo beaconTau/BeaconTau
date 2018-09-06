@@ -88,11 +88,11 @@ class RunAnalyzer():
     Class for examining data in a run.
     Can plot/scan any attribute in the Status/Header/Event files.
     Can pull up individual events by event_number or entry.
-    Wraps the file reading action from RunReader into something a bit more python friendly.
+    Wraps the file reading action from FileReader into something a bit more python friendly.
     """
     def __init__(self, run, data_dir):
         self.run = run
-        self.run_reader = RunReader(run, data_dir)
+        self.run_reader = FileReader(run, data_dir)
         self.extracted_values = dict()
 
     def split_attribute(self, attribute):
@@ -224,7 +224,7 @@ def main():
     d = DataDirectory()
 
     for r in d:
-        for entry in range(3):
+        for entry in range(2):
             e = r.get_entry(entry)
             e.plot()
         r.draw('trigger_thresholds')

@@ -12,9 +12,9 @@ namespace py = pybind11;
 
 namespace BeaconTau {
 
-  class RunReader {
+  class FileReader {
   public:
-    RunReader(int run, const std::string& base_dir)
+    FileReader(int run, const std::string& base_dir)
       : run(run), base_dir(base_dir)
     {
       run_dir = base_dir + "/run" + std::to_string(run) + "/";
@@ -239,16 +239,16 @@ PYBIND11_MODULE(_BeaconTau, m) {
 		       return s;
 		     });
 
-  py::class_<BeaconTau::RunReader>(m, "RunReader")
+  py::class_<BeaconTau::FileReader>(m, "FileReader")
     .def(py::init<int, const std::string&>())
-    .def("__repr__",  [](const BeaconTau::RunReader& r){
+    .def("__repr__",  [](const BeaconTau::FileReader& r){
 			static std::string s;
-			s = "<BeaconTau.RunReader for run " + std::to_string(r.run) + ">";
+			s = "<BeaconTau.FileReader for run " + std::to_string(r.run) + ">";
 			return s;
 		      })
-    .def_readonly("events", &BeaconTau::RunReader::events)
-    .def_readonly("headers", &BeaconTau::RunReader::headers)
-    .def_readonly("statuses", &BeaconTau::RunReader::statuses);  
+    .def_readonly("events", &BeaconTau::FileReader::events)
+    .def_readonly("headers", &BeaconTau::FileReader::headers)
+    .def_readonly("statuses", &BeaconTau::FileReader::statuses);
   
 }
 
