@@ -6,7 +6,7 @@ class EventAnalyzer():
     """
     Do some useful things with the raw Event and Header classes defined in BeaconTau.cpp
     The magic of pybind11 only gets us so far: it's hard to extend the same c++ classes in python.
-    Inheritance is also pain to implement (it's difficult and would be inefficient to copy data to the derived class).
+    Inheritance is also pain to implement (and would be inefficient to copy data to the derived class).
     So instead this we have this EventAnalyzer class that has event and header members, and does useful things with them.
     """
 
@@ -16,18 +16,32 @@ class EventAnalyzer():
         self.header = header
         self.event = event
 
+        self.time_array = None # Constructed on demand
+        self.sample_delta_t = 2.0 # Nano seconds
+
     def __repr__(self):
         return '<BeaconTau.EventAnalyzer for event ' + str(self.event.event_number) + '>'
 
+    def channel(self, chan_index, board_index = 0):
+        # The primary method of accessing the channel data.
+        # Automatically trims the buffer to the correct length.
+        return self.event.data[board_index][chan_index][:self.event.buffer_length]
+
+    def times(self):
+        # Dynamically constructs the time array for the event
+        if self.time_array is None:
+            self.time_array = [self.sample_delta_t*i for i in range(self.event.buffer_length)]
+        return self.time_array
+
     def plot(self, n_rows = 2, show = False):
+        # Draw the event in Matplotlib
         for board in self.event.data:
             n_cols = int(len(board)/n_rows)
             fig, axes = plt.subplots(n_rows, n_cols, sharey = True)
-            for channel, waveform in enumerate(board):
-                axes.flat[channel].plot(waveform[:self.event.buffer_length])
-                axes.flat[channel].set_title('Channel' + str(channel+1))
+            for chan in range(len(board)):
+                axes.flat[chan].plot(self.times(),  self.channel(chan))
+                axes.flat[chan].set_title('Channel' + str(chan+1))
         plt.suptitle('Event ' + str(self.event.event_number))
-
 
 
 class DataDirectory():
