@@ -223,7 +223,7 @@ PYBIND11_MODULE(_BeaconTau, m) {
 
   py::class_<beacon_status>(m, "Status")
     .def(py::init<>())
-    .def_readonly("global_scalars",     &beacon_status::global_scalers)
+    .def_readonly("global_scalers",     &beacon_status::global_scalers)
     .def_readonly("beam_scalers",       &beacon_status::beam_scalers)
     .def_readonly("deadtime",           &beacon_status::deadtime)
     .def_readonly("readout_time",       &beacon_status::readout_time)
