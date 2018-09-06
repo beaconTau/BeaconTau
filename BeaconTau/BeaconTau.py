@@ -53,7 +53,7 @@ class EventAnalyzer():
             self.freq_array = [self.df*j for j in range(nf)]
         return self.freq_array
 
-    def plot(self, n_rows = 2, show = False, axes = None):
+    def plot(self, n_rows = 2, show = False, axes = None, freq_domain = False, log_scale = True):
         # Draw the event in Matplotlib
         for board in self.event.data:
             n_cols = int(len(board)/n_rows)
@@ -63,11 +63,19 @@ class EventAnalyzer():
             if axes is None:
                 fig, axes = plt.subplots(n_rows, n_cols, sharey = True, sharex = True)
             for chan in range(len(board)):
-                #axes.flat[chan].plot(self.times(),  self.channel(chan))
-                axes.flat[chan].plot(self.freqs(), self.channel_psd_db(chan))
-                axes.flat[chan].set_title('Channel' + str(chan+1))
-                axes.flat[chan].set_xlabel('Freq (MHz)')
-                axes.flat[chan].set_ylabel('PSD (dB)')
+                axes.flat[chan].set_title('Channel ' + str(chan+1))
+                if freq_domain is False:
+                    axes.flat[chan].plot(self.times(),  self.channel(chan))
+                    axes.flat[chan].set_xlabel('Time (ns)')
+                    axes.flat[chan].set_ylabel('Amplitude (mV)')
+                else:
+                    axes.flat[chan].set_xlabel('Freq (MHz)')
+                    if log_scale is True:
+                        axes.flat[chan].plot(self.freqs(), self.channel_psd_db(chan))
+                        axes.flat[chan].set_ylabel('PSD (dB)')
+                    else:
+                        axes.flat[chan].plot(self.freqs(), self.channel_psd(chan))
+                        axes.flat[chan].set_ylabel('PSD (mV^{2} / MHz)')
             plt.suptitle('Event ' + str(self.event.event_number))
         if show is True:
             plt.show()
