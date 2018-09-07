@@ -9,6 +9,7 @@ The [libbeacon](https://github.com/beaconTau/libbeacon) library is tagged in syn
 ## [0.1.5] - ??????????
 
 ### Added
+- FileReader can now read in non-gzipped data (tmp files are ignored for now).
 
 ### Changed
 - EventAnalyzer calls matplotlib.pylot ion() and show() to get plots to appear instantly

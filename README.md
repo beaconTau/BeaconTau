@@ -8,7 +8,23 @@ This package uses [pybind11](https://github.com/pybind/pybind11) to get the raw 
 This package calls the c backend to read binary data from disk into your python prompt.
 From there all the standard python loveliness is available.
 
-The current functionality is somewhat basic, the most glaring issue is that currently only the gzipped data files can be parsed by the RunReader.
+## Quick start
+Once you've installed the package (see below) define an environment variable called `BEACON_DATA_DIR` with the directory containing all the BEACON runs (and the hk folder).
+From your python prompt.
+```python
+>>> import BeaconTau as bt
+>>> dd = bt.DataDirectory()      # Will look in BEACON_DATA_DIR
+>>> r = dd.run(99)               # to get run 99, if you have it
+>>> r.draw(trigger_thresholds')  # *limited* ROOT-style draw functionality is available, emphasis on limited
+>>> e = r.get_entry(0)           # You can access events by entry (index) where 0 is the first event in the run...
+>>> e = r.get_event(99000000002) # or by the full event number (provided it is in the run)
+>>> e.plot()                     # Quickly plot them in the time domain
+>>> e.plot(freq_domain = True)   # Or the frequency domain
+>>> e.channel(3)                 # Gives you the actual waveforms,
+>>> e.channel_psd(3)             # gives you the power spectrum...
+```
+Take a look at the actual source code to see more.
+Happy analyzing!
 
 ## Pre-requisites
 1. python3
@@ -49,7 +65,7 @@ pip  install BeaconTau
 
 Then, fire up python and you're good to go.
 ```python
-import BeaconTau
+>>> import BeaconTau
 ```
 
 Note that for future sessions you will need to do `conda activate Beacon` before starting python to have access to all the BeaconTau goodies.
@@ -68,7 +84,7 @@ pip install BeaconTau # Install from PyPI (only need to do this once, unless upg
 From there start `python`
 
 ```python
-import BeaconTau
+>>> import BeaconTau
 ```
 And you should be good to go.
 Remember that you will need to do `source BeaconTau-env/bin/activate` each time you want to use this python module!
