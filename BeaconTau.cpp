@@ -79,6 +79,7 @@ namespace BeaconTau {
 	  events.pop_back();
 	}
       }
+      gzclose(file);
       return numEvents;
     }
 
@@ -103,6 +104,7 @@ namespace BeaconTau {
 	  headers.pop_back();
 	}
       }
+      gzclose(file);
       return numEvents;
     }
     
@@ -126,6 +128,7 @@ namespace BeaconTau {
 	  statuses.pop_back();
 	}
       }
+      gzclose(file);
       return numEvents;
     }
 
