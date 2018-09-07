@@ -34,7 +34,7 @@ class DataDirectory():
         self._i =  0
 
     def __repr__(self):
-        return '<BeaconTau.DataDirectory containing runs' + str(self.runs) + '>'
+        return '<BeaconTau.DataDirectory at ' + str(self.data_dir) + ' containing runs ' + str(self.runs) + '>'
 
     def __iter__(self):
         return self

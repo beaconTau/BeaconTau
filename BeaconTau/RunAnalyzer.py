@@ -14,6 +14,9 @@ class RunAnalyzer():
         self.run_reader = FileReader(run, data_dir)
         self.extracted_values = dict()
 
+    def __repr__(self):
+        return ('<BeaconTau.RunAnalyzer for run ' + str(self.run) + '>')
+
     def split_attribute(self, attribute):
         attributes = attribute.split(':')
         return attributes
