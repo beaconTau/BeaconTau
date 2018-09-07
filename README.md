@@ -14,11 +14,11 @@ The current functionality is somewhat basic, the most glaring issue is that curr
 1. python3
    - The recommended way to get it is via miniconda or anaconda if disk space and bandwidth aren't a concern. 
 	 - You can find a suite of miniconda installers [here](https://repo.continuum.io/miniconda/).
-   - A recent Vanilla python3 should also work fine though.
+   - A recent "vanilla" python3 installation should also work fine though.
 
 2. A recent c++ compiler
    - [pybind11](https://github.com/pybind/pybind11) requires a c++11 compiler (clue is in the name).
-   - Unless you're on a very old machine you probably don't need to worry about this, otherwise install more c++ compiler and check it is invoked by default.
+   - Unless you're on a very old machine you probably don't need to worry about this, otherwise install more recent c++ compiler and check it is invoked by default.
 
 ## Installation
 
@@ -82,4 +82,4 @@ As yet it is unstable and poorly documented.
 
 ## Version history
 
-See [RELEASES.md](https://github.com/beaconTau/BeaconTau/RELEASES.md).
+See [RELEASES.md](https://github.com/beaconTau/BeaconTau/blob/master/RELEASES.md).

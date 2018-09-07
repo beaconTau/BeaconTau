@@ -8,7 +8,7 @@ The [libbeacon](https://github.com/beaconTau/libbeacon) library is tagged in syn
 ## [0.1.4] - 2018-09-07
 
 ### Added
-- RunAnalyzer class to draw, scan, event properties, wraps aroun
+- RunAnalyzer class to draw, scan, event properties, wraps around FileReader.
 - RELEASES.md to prevent cluttering of the README.md
 - EventAnalyzer.py, RunAnalyzer.py, DataDirectory.py get their own file.
 
