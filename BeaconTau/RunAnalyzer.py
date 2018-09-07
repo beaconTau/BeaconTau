@@ -34,17 +34,23 @@ class RunAnalyzer():
 
         values = None
         try:
-            values = [e.__getattribute__(attribute) for e in self.run_reader.events]
+            values = [s.__getattribute__(attribute) for s in self.run_reader.statuses]
+            return values
         except:
-            try:
-                values = [h.__getattribute__(attribute) for h in self.run_reader.headers]
-            except:
-                try:
-                    values = [s.__getattribute__(attribute) for s in self.run_reader.statuses]
-                except:
-                    raise ValueError(attribute + ' is not something in BeaconTau.Status, BeaconTau.Header, or BeaconTau.Event!')
+            pass
+        try:
+            values = [h.__getattribute__(attribute) for h in self.run_reader.headers]
+            return values
+        except:
+            pass
+        try:
+            values = [e.__getattribute__(attribute) for e in self.run_reader.events]
+            return values
+        except:
+            pass
 
-        return values
+        raise AttributeError(attribute + ' is not something in BeaconTau.Status, BeaconTau.Header, or BeaconTau.Event!')
+        return None
 
     def draw(self, attribute, show = False):
         plt.ion()
