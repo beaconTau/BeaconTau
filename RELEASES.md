@@ -5,6 +5,14 @@ Releases (> 0.1.0) correspond to the version hosted on [pypi.org](https://pypi.o
 The version hosted on github may be ahead of the most recent pypi, if this is the case then this tag is unstable, may be moved or removed, as it represents a release under active development.
 The [libbeacon](https://github.com/beaconTau/libbeacon) library is tagged in sync with the BeaconTau since setup.py pulls in the matching version.
 
+
+## [0.1.5] - ??????????
+
+### Added
+
+### Changed
+- EventAnalyzer calls matplotlib.pylot ion() and show() to get plots to appear instantly
+
 ## [0.1.4] - 2018-09-07
 
 ### Added

@@ -53,6 +53,9 @@ class EventAnalyzer():
         return self.freq_array
 
     def plot(self, n_rows = 2, show = False, axes = None, freq_domain = False, log_scale = True):
+        plt.ion()
+        plt.show()
+
         # Draw the event in Matplotlib
         for board in self.event.data:
             n_cols = int(len(board)/n_rows)
