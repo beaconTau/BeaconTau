@@ -18,7 +18,7 @@ The current functionality is somewhat basic, the most glaring issue is that curr
 
 2. A recent c++ compiler
    - [pybind11](https://github.com/pybind/pybind11) requires a c++11 compiler (clue is in the name).
-   - Unless you're on a very old machine you probably don't need to worry about this
+   - Unless you're on a very old machine you probably don't need to worry about this, otherwise install more c++ compiler and check it is invoked by default.
 
 ## Installation
 
@@ -42,7 +42,7 @@ conda install pip
 pip install --upgrade pip
 ```
 
-Finally, install BeaconTau
+Finally, install BeaconTau (sadly the name Beacon was already taken)
 ```bash
 pip  install BeaconTau
 ```
@@ -78,20 +78,8 @@ Remember that you will need to do `source BeaconTau-env/bin/activate` each time 
 ## Flame (Facility for Live Action Monitoring of Events)
 
 A prototype online browser based event on BeaconTau and bokeh.
+As yet it is unstable and poorly documented.
 
 ## Version history
 
-I'm aiming to keep [libbeacon](https://github.com/beaconTau/libbeacon) version tags in sync with BeaconTau version tags.
-
-| Version | Notes                                                                                             |
-|---------|---------------------------------------------------------------------------------------------------|
-| 0.1.0   | Working local implementation of BeaconTau and Flame                                               |
-| 0.1.1   | First working version on PyPI!                                                                    |
-| 0.1.2   | Bug fix release: for pip install process, make sure pybind11 is installed before running setup.py |
-| 0.1.3   | Bug fix release: for pip install process, set std=c++11 for compiling against pybind              |
-| 0.1.4   | Track upstream changes, from libnuphase -> libbeacon                                              |
-
-
-
-
-
+See [RELEASES.md](https://github.com/beaconTau/BeaconTau/RELEASES.md).
