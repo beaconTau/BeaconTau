@@ -13,7 +13,10 @@ namespace py = pybind11;
 
 /**
  * @namespace _BeaconTau
- * @brief The c++ part of the BeaconTau python module, uses bybind11 to get this into your python interpreter.
+ * @brief The c++ part of the BeaconTau python module
+ *
+ * C++ code defined here will use pybind11 to get to your python interpreter.
+ * This is probably where any low level file manipulation will be implemented.
  */
 
 namespace _BeaconTau {
@@ -63,7 +66,7 @@ namespace _BeaconTau {
       return files;
     }
 
-    int beacon_generic_read(gzFile gz_file, FILE* file, beacon_status* status){
+    int generic_read(gzFile gz_file, FILE* file, beacon_status* status){
       if(gz_file != Z_NULL){
 	return beacon_status_gzread(gz_file, status);
       }
@@ -72,7 +75,7 @@ namespace _BeaconTau {
       }
     }
 
-    int beacon_generic_read(gzFile gz_file, FILE* file, beacon_header* header){
+    int generic_read(gzFile gz_file, FILE* file, beacon_header* header){
       if(gz_file != Z_NULL){
 	return beacon_header_gzread(gz_file, header);
       }
@@ -81,7 +84,7 @@ namespace _BeaconTau {
       }
     }
 
-    int beacon_generic_read(gzFile gz_file, FILE* file, beacon_event* event){
+    int generic_read(gzFile gz_file, FILE* file, beacon_event* event){
       if(gz_file != Z_NULL){
 	return beacon_event_gzread(gz_file, event);
       }
@@ -121,7 +124,7 @@ namespace _BeaconTau {
       int retVal = 0;
       while(retVal == 0){
 	ts.emplace_back(T());
-	retVal = beacon_generic_read(gz_file, file, &ts.back());
+	retVal = generic_read(gz_file, file, &ts.back());
 	if(retVal==0){
 	  numEvents++;
 	}
@@ -149,23 +152,6 @@ namespace _BeaconTau {
 PYBIND11_MODULE(_BeaconTau, m) {
   m.doc() = "Python module for the BEACON experiment";
 
-  // py::enum_<np_io_error_t>(m,"np_io_error_t")
-  //   .value("NP_ERR_CHECKSUM_FAILED", np_io_error_t::NP_ERR_CHECKSUM_FAILED)
-  //   .value("NP_ERR_NOT_ENOUGH_BYTES", np_io_error_t::NP_ERR_NOT_ENOUGH_BYTES)
-  //   .value("NP_ERR_NOT_WRONG", np_io_error_t::NP_ERR_NOT_WRONG)
-  //   .value("NP_ERR_BAD_VERSION", np_io_error_t::NP_ERR_BAD_VERSION)
-  //   .export_values();
-
-
-  // /**  Trigger types */
-  // typedef enum beacon_trigger_type
-  // {
-  //  NP_TRIG_NONE,   //<! Triggered by nothing (should never happen but if it does it's a bad sign1)
-  //  NP_TRIG_SW,    //!< triggered by software (force trigger)
-  //  NP_TRIG_RF,    //!< triggered by input waveforms
-  //  NP_TRIG_EXT    //!< triggered by external trigger
-  // } beacon_trig_type_t;
-
   py::enum_<beacon_trigger_type>(m,"TrigType")
     .value("NP_TRIG_NONE", beacon_trigger_type::BN_TRIG_NONE)
     .value("NP_TRIG_SW",   beacon_trigger_type::BN_TRIG_SW)
@@ -178,12 +164,6 @@ PYBIND11_MODULE(_BeaconTau, m) {
     .value("H", beacon_trigger_polarization::H)
     .value("V", beacon_trigger_polarization::V)
     .export_values();
-
-  // typedef enum beacon_trigger_polarization
-  // {
-  //  H = 0,
-  //  V = 1
-  // } beacon_trigger_polarization_t;
 
   py::class_<beacon_header>(m, "Header")
     .def(py::init<>())

@@ -7,16 +7,14 @@ from .DataDirectory import DataDirectory
 name = "BeaconTau"
 
 def main():
-    d = DataDirectory()
+    dd = DataDirectory()
 
-    for r in d:
+    for run in dd:
         for entry in range(2):
-            e = r.get_entry(entry)
-            e.plot()
-        r.draw('trigger_thresholds')
+            event = run.get_entry(entry)
+            event.plot()
+        run.draw('trigger_thresholds')
 
-# plt.ion()
-# plt.show()
 if __name__ == '__main__':
     main()
 

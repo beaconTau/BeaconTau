@@ -18,24 +18,27 @@ subprocess.call(["pip", "install", "pybind11"])
 import pybind11
 
 pybind11_include_dir = pybind11.get_include()
-libbeacon_clone_dir = tempfile.TemporaryDirectory()
-libbeacon_version_tag = "0.1.4"
+libbeacon_dir = tempfile.TemporaryDirectory()
+libbeacon_version_tag = "0.1.5"
 
 
 class BeaconTauClean(clean):
+    description = 'Custom cleanup for the BeaconTau package'
     def run(self):
-        libbeacon_clone_dir.cleanup()
+        libbeacon_dir.cleanup()
         clean.run(self)
 
 class BeaconTauBuild(build):
+    description = 'Custom build command for the BeaconTau package.'
+
     def run(self):
-        # first we clone and build the required version of libbeacon.so
-        clone_command = "git clone --branch v"+ libbeacon_version_tag + " https://github.com/beaconTau/libbeacon " + libbeacon_clone_dir.name
+        # Clone and build the required version of libbeacon.so
+        clone_command = "git clone --branch v"+ libbeacon_version_tag + " https://github.com/beaconTau/libbeacon " + libbeacon_dir.name
         clone_process = subprocess.Popen(clone_command, shell=True)
         clone_process.wait()
+
         # Then do the normal python building
         build.run(self)
-
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -51,11 +54,12 @@ setup(
     url="https://github.com/beaconTau/BeaconTau",
     packages=['BeaconTau', 'BeaconTau/Flame'],
     ext_modules=[
-        Extension('_BeaconTau', ['BeaconTau.cpp',  libbeacon_clone_dir.name + '/beacon.c'],
-                  include_dirs = [libbeacon_clone_dir.name, pybind11_include_dir],
+        Extension('_BeaconTau', ['BeaconTau.cpp',  libbeacon_dir.name + '/beacon.c'],
+                  include_dirs = [libbeacon_dir.name, pybind11_include_dir],
                   library_dirs = ['/usr/local/lib' ],
                   libraries=['z'],
-                  extra_compile_args = ['-std=c++11']
+                  extra_compile_args = ['-std=c++11'],
+                  language = 'c++'
                   )
     ],
     install_requires=[
@@ -71,3 +75,4 @@ setup(
         'clean' : BeaconTauClean,
     }
 )
+
