@@ -58,7 +58,7 @@ setup(
                   include_dirs = [libbeacon_dir.name, pybind11_include_dir],
                   library_dirs = ['/usr/local/lib' ],
                   libraries=['z'],
-                  extra_compile_args = ['-std=c++11'],
+                  extra_compile_args = ['-shared', '-O3', '-Wall', '-std=c++11', '-fPIC'],
                   language = 'c++'
                   )
     ],

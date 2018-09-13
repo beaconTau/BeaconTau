@@ -132,14 +132,12 @@ namespace _BeaconTau {
 	  ts.pop_back();
 	}
       }
-
       if(gz_file != Z_NULL){
 	gzclose(gz_file);
       }
       if(file != NULL){
 	fclose(file);
       }
-
       return numEvents;
     }
   };
