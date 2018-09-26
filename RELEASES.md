@@ -6,10 +6,13 @@ The version hosted on github may be ahead of the most recent pypi, if this is th
 The [libbeacon](https://github.com/beaconTau/libbeacon) library is tagged in sync with the BeaconTau since setup.py pulls in the matching version.
 
 
-## [0.1.5] - ??????????
+## [0.1.5] - 2018-09-26
+
+### Fixed
+- Compilation on MacOS. Clang is fussier than gcc and could not figure out to ignore the -std=c++11 flag when compiling c source code. Separate flags for each source was not easy to implement. Now the beacon.o file is now compiled separately by directly using the libbeacon Makefile. It is included in the extension via extra_objects.
 
 ### Added
-- FileReader can now read in non-gzipped data (tmp files are ignored for now).
+- FileReader can now read in non-gzipped data (tmp files are ignored for now). This should result in a significant speed up in looping over data.
 
 ### Changed
 - EventAnalyzer calls matplotlib.pylot ion() and show() to get plots to appear instantly

@@ -12,10 +12,24 @@ from distutils.command.clean import clean
 import subprocess
 import tempfile
 
-
-subprocess.call(["pip", "install", "pybind11"])
-
-import pybind11
+# Try this first?
+subprocess.call(["python3", "-m", "install", "pybind11"])
+try:
+    import pybind11
+except ImportError:
+    print('***************************************************************')
+    print('Error! pybind11 is required to compile the BeaconTau back end.')
+    print('Try the following if you have a conda installation:')
+    print('')
+    print('  $ conda install pybind11')
+    print('')
+    print("or if you're using a virtualenv:")
+    print('')
+    print('  $ python3 -m pip install pybind11')
+    print('')
+    print('Once pybind11 is installed, try installing BeaconTau again.')
+    print('***************************************************************')
+    exit(1)
 
 pybind11_include_dir = pybind11.get_include()
 libbeacon_dir = tempfile.TemporaryDirectory()
@@ -37,6 +51,10 @@ class BeaconTauBuild(build):
         clone_process = subprocess.Popen(clone_command, shell=True)
         clone_process.wait()
 
+        make_beacon_o_command = 'make -f ' + libbeacon_dir.name + '/Makefile -C ' + libbeacon_dir.name + ' beacon.o'
+        make_beacon_o_process = subprocess.Popen(make_beacon_o_command, shell=True)
+        make_beacon_o_process.wait()
+
         # Then do the normal python building
         build.run(self)
 
@@ -54,12 +72,12 @@ setup(
     url="https://github.com/beaconTau/BeaconTau",
     packages=['BeaconTau', 'BeaconTau/Flame'],
     ext_modules=[
-        Extension('_BeaconTau', ['BeaconTau.cpp',  libbeacon_dir.name + '/beacon.c'],
+        Extension('_BeaconTau', ['BeaconTau.cpp'],
                   include_dirs = [libbeacon_dir.name, pybind11_include_dir],
-                  library_dirs = ['/usr/local/lib' ],
+                  library_dirs = ['/usr/local/lib'],
                   libraries=['z'],
-                  extra_compile_args = ['-shared', '-O3', '-Wall', '-std=c++11', '-fPIC'],
-                  language = 'c++'
+                  extra_objects=[libbeacon_dir.name  + '/beacon.o'],
+                  extra_compile_args = ['-shared', '-O3', '-Wall', '-fPIC', '-std=c++11'],
                   )
     ],
     install_requires=[

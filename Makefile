@@ -7,10 +7,10 @@ LIB_SUFFIX = `python3-config --extension-suffix`
 
 beacon:
 	@echo "Building BeaconTau v${BEACON_TAU_VERSION}"
-	python setup.py sdist
+	python3 setup.py sdist
 
 	@echo "Installing BeaconTau v${BEACON_TAU_VERSION}"
-	pip install dist/BeaconTau-${BEACON_TAU_VERSION}.tar.gz
+	python3 -m pip install dist/BeaconTau-${BEACON_TAU_VERSION}.tar.gz
 
 devel:
 	@echo "Building BeaconTau against "$(LIBBEACONDIR)
