@@ -3,7 +3,7 @@ from .RunAnalyzer import RunAnalyzer
 from matplotlib import pyplot as plt
 
 #from matplotlib.widgets import Slider, Button, RadioButtons
-from matplotlib.widgets import Button, TextBox
+from matplotlib.widgets import Button, TextBox, RadioButtons
 
 from enum import Enum
 
@@ -23,12 +23,12 @@ class Viewer():
 
         self.run = None
         if run is None:
-            run = self.dd.runs[0]
+            run = self.dd.runs[-1] # Get the most recent
 
         self.n_rows = 2
 
         self.domain = Domain.Time
-        self.log_scale = False
+        self.log_scale = True #False
 
         self.fig = None
         self.axes = None
@@ -42,6 +42,8 @@ class Viewer():
         self.playing = False
  
         self.run_selection = None
+        self.domain_selection = None
+
         plt.ion()
         plt.show()
 
@@ -72,6 +74,19 @@ class Viewer():
         self.playing = False
         self.timer.stop()
 
+    def switch_domain(self, domain_str):
+        if domain_str is 'Time':
+            if self.domain is not Domain.Time:
+                self.domain = Domain.Time
+                self.update()
+
+        elif domain_str is 'Freq':
+            if self.domain is not Domain.Freq:
+                self.domain = Domain.Freq
+                self.update()
+        else:
+            raise ValueError('Unknown domain')
+        
     def set_run(self, run):
         run = int(run)
         if run is not self.run:
@@ -83,6 +98,10 @@ class Viewer():
             self.entry = 0
             self.event_analyzer = self.run_analyzer.get_entry(self.entry)
             self.update()
+
+        # Put the run we actually have back in the text box
+        if self.run_selection is not None:
+            self.run_selection.set_val(str(self.run))
 
     def __repr__(self):
         return '<BeaconTau.Viewer run ' + self.run + ' event ' + self.event_analyzer.header.event_number + '>'
@@ -106,15 +125,15 @@ class Viewer():
                 if self.domain is Domain.Time:
                     self.axes.flat[chan].plot(self.event_analyzer.times(),  self.event_analyzer.channel(chan), color) 
                     self.axes.flat[chan].set_xlabel('Time (ns)')
-                    self.axes.flat[chan].set_ylabel('Amplitude (mV)')
+                    self.axes.flat[chan].set_ylabel('Amplitude (ADC)')
                 else:
                     self.axes.flat[chan].set_xlabel('Freq (MHz)')
                     if self.log_scale is True:
-                        self.axes.flat[chan].plot(self.event_analyzer.freqs(), self.event_analyzer.channel_psd_db(chan), color)
+                        self.axes.flat[chan].plot(self.event_analyzer.freqs()[1:], self.event_analyzer.channel_psd_db(chan)[1:], color)
                         self.axes.flat[chan].set_ylabel('PSD (dB)')
                     else:
-                        self.axes.flat[chan].plot(self.event_analyzer.freqs(), self.event_analyzer.channel_psd(chan), color)
-                        self.axes.flat[chan].set_ylabel('PSD (mV^{2} / MHz)')
+                        self.axes.flat[chan].plot(self.event_analyzer.freqs()[1:], self.event_analyzer.channel_psd(chan)[1:], color)
+                        self.axes.flat[chan].set_ylabel('PSD (mV**2 / MHz)')
             plt.suptitle('Run ' + str(self.run) + ' Event ' + str(self.event_analyzer.event.event_number))
 
         hover_color = 'white'
@@ -144,3 +163,7 @@ class Viewer():
             self.run_selection = TextBox(run_ax, 'Run', initial = str(self.run), color = 'white',  hovercolor = 'lightgrey')
             self.run_selection.on_submit(self.set_run)
 
+        if self.domain_selection is None:
+            domain_ax = plt.axes([0.05, 0.89, 0.05, 0.06])
+            self.domain_selection = RadioButtons(domain_ax, ('Time', 'Freq'))
+            self.domain_selection.on_clicked(self.switch_domain)
