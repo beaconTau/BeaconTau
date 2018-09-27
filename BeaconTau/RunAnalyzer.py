@@ -11,7 +11,7 @@ class RunAnalyzer():
     """
     def __init__(self, run, data_dir):
         self.run = run
-        self.run_reader = FileReader(run, data_dir)
+        self.file_reader = FileReader(run, data_dir)
         self.extracted_values = dict()
 
     def __repr__(self):
@@ -34,17 +34,17 @@ class RunAnalyzer():
 
         values = None
         try:
-            values = [s.__getattribute__(attribute) for s in self.run_reader.statuses]
+            values = [s.__getattribute__(attribute) for s in self.file_reader.statuses]
             return values
         except:
             pass
         try:
-            values = [h.__getattribute__(attribute) for h in self.run_reader.headers]
+            values = [h.__getattribute__(attribute) for h in self.file_reader.headers]
             return values
         except:
             pass
         try:
-            values = [e.__getattribute__(attribute) for e in self.run_reader.events]
+            values = [e.__getattribute__(attribute) for e in self.file_reader.events]
             return values
         except:
             pass
@@ -84,15 +84,18 @@ class RunAnalyzer():
                         break
             print('Finished scanning ' + str(entries) + ' entries')
 
+    def events(self):
+        for entry in range(len(self.file_reader.headers)):
+            yield self.get_entry(entry)
 
     def get_entry(self, entry):
-        return EventAnalyzer(self.run_reader.headers[entry],  self.run_reader.events[entry])
+        return EventAnalyzer(self.file_reader.headers[entry],  self.file_reader.events[entry])
 
     def get_event(self, event_number):
         event_numbers = self.cached_extract('event_number')
         try:
             entry = event_numbers.index(event_number)
-            return get_entry(entry)
+            return self.get_entry(entry)
         except:
             raise ValueError(str(event_number) + ' not found in run ' + str(self.run))
             return None
