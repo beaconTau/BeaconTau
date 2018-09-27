@@ -1,3 +1,4 @@
+from BeaconTau import NUM_BEAMS
 from .DataDirectory import DataDirectory
 from .RunAnalyzer import RunAnalyzer
 from matplotlib import pyplot as plt
@@ -40,9 +41,10 @@ class Viewer():
         self.stop_button = None
         self.timer = None
         self.playing = False
- 
+
         self.run_selection = None
         self.domain_selection = None
+        self.trigger_beam_texts = None
 
         plt.ion()
         plt.show()
@@ -74,7 +76,7 @@ class Viewer():
         self.playing = False
         self.timer.stop()
 
-    def switch_domain(self, domain_str):
+    def switch_domain(self, domain_str: str):
         if domain_str is 'Time':
             if self.domain is not Domain.Time:
                 self.domain = Domain.Time
@@ -86,8 +88,8 @@ class Viewer():
                 self.update()
         else:
             raise ValueError('Unknown domain')
-        
-    def set_run(self, run):
+
+    def set_run(self, run: int):
         run = int(run)
         if run is not self.run:
             if run not in self.dd.runs:
@@ -106,12 +108,24 @@ class Viewer():
     def __repr__(self):
         return '<BeaconTau.Viewer run ' + self.run + ' event ' + self.event_analyzer.header.event_number + '>'
 
-    def update(self):
-        # Draw the event in Matplotlib
+    def update_header_text(self):
+        if self.trigger_beam_texts is None:
+            self.trigger_beam_texts = {}
+            for beam in range(NUM_BEAMS):
+                height = 0.03
+                x = 0.93
+                y = 0.89 - (beam+1)*height
+                self.trigger_beam_texts[beam] = plt.figtext(x, y, 'Beam ' + str(beam).zfill(2), bbox=dict(facecolor='white'))
 
+        for beam in range(NUM_BEAMS):
+            if self.event_analyzer.beam_triggered(beam):
+                self.trigger_beam_texts[beam].set_backgroundcolor('red')
+            else:
+                self.trigger_beam_texts[beam].set_backgroundcolor('white')
+
+    def update(self):
         for board in self.event_analyzer.event.data:
 
-            # TODO add check on axes length if extenal set of axes passed in
             # TODO for multiple boards, maybe that's overkill...
             if self.axes is None:
                 n_cols = int(len(board)/self.n_rows)
@@ -123,7 +137,7 @@ class Viewer():
                 color = 'C' + str(chan) # matplotlib accepts strings beginning with a capital C for colors
                 self.axes.flat[chan].clear()
                 if self.domain is Domain.Time:
-                    self.axes.flat[chan].plot(self.event_analyzer.times(),  self.event_analyzer.channel(chan), color) 
+                    self.axes.flat[chan].plot(self.event_analyzer.times(),  self.event_analyzer.channel(chan), color)
                     self.axes.flat[chan].set_xlabel('Time (ns)')
                     self.axes.flat[chan].set_ylabel('Amplitude (ADC)')
                 else:
@@ -135,6 +149,8 @@ class Viewer():
                         self.axes.flat[chan].plot(self.event_analyzer.freqs()[1:], self.event_analyzer.channel_psd(chan)[1:], color)
                         self.axes.flat[chan].set_ylabel('PSD (mV**2 / MHz)')
             plt.suptitle('Run ' + str(self.run) + ' Event ' + str(self.event_analyzer.event.event_number))
+
+            self.update_header_text()
 
         hover_color = 'white'
         # For these btton axes the list is [left, bottom, width, height]
@@ -159,11 +175,11 @@ class Viewer():
             self.prev_button.on_clicked(self.backward)
 
         if self.run_selection is None:
-            run_ax = plt.axes([0.05, 0.95, 0.05, 0.03])
+            run_ax = plt.axes([0.02, 0.95, 0.05, 0.03])
             self.run_selection = TextBox(run_ax, 'Run', initial = str(self.run), color = 'white',  hovercolor = 'lightgrey')
             self.run_selection.on_submit(self.set_run)
 
         if self.domain_selection is None:
-            domain_ax = plt.axes([0.05, 0.89, 0.05, 0.06])
+            domain_ax = plt.axes([0.02, 0.89, 0.05, 0.06])
             self.domain_selection = RadioButtons(domain_ax, ('Time', 'Freq'))
             self.domain_selection.on_clicked(self.switch_domain)
