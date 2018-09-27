@@ -3,6 +3,7 @@ from _BeaconTau import * # Load the pybind11 stuff defined in _BeaconTau as if i
 from .EventAnalyzer import EventAnalyzer
 from .RunAnalyzer import RunAnalyzer
 from .DataDirectory import DataDirectory
+from .Viewer import Viewer
 
 name = "BeaconTau"
 
