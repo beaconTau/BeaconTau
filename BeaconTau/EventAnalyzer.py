@@ -26,6 +26,12 @@ class EventAnalyzer():
     def __repr__(self):
         return '<BeaconTau.EventAnalyzer for event ' + str(self.event.event_number) + '>'
 
+    def beam_triggered(self, beam):
+        if beam < 0 or beam >= NUM_BEAMS:
+            return 0
+        else:
+            return ((self.header.triggered_beams & (1<<beam)) > 0)
+
     def channel(self, chan_index, board_index = 0):
         # The primary method of accessing the channel data.
         # Automatically trims the buffer to the correct length.
