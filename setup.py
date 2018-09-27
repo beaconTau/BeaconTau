@@ -50,10 +50,14 @@ class BeaconTauBuild(build):
         clone_command = "git clone --branch v"+ libbeacon_version_tag + " https://github.com/beaconTau/libbeacon " + libbeacon_dir.name
         clone_process = subprocess.Popen(clone_command, shell=True)
         clone_process.wait()
+        if clone_process.returncode is not 0:
+            raise Exception('Unable to get ' + libbeacon_version_tag +  ' of libbeacon. Aborting!')
 
         make_beacon_o_command = 'make -f ' + libbeacon_dir.name + '/Makefile -C ' + libbeacon_dir.name + ' beacon.o'
         make_beacon_o_process = subprocess.Popen(make_beacon_o_command, shell=True)
         make_beacon_o_process.wait()
+        if make_beacon_o_process.returncode is not 0:
+            raise Exception('Unable to build version ' + libbeacon_version_tag + ' of libbeacon. Aborting!')
 
         # Then do the normal python building
         build.run(self)
