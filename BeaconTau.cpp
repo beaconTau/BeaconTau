@@ -149,6 +149,12 @@ namespace _BeaconTau {
 
 PYBIND11_MODULE(_BeaconTau, m) {
   m.doc() = "Python module for the BEACON experiment";
+  m.attr("NUM_CHAN")            = BN_NUM_CHAN;
+  m.attr("NUM_BUFFER")          = BN_NUM_BUFFER;
+  m.attr("MAX_WAVEFORM_LENGTH") = BN_MAX_WAVEFORM_LENGTH;
+  m.attr("MAX_BOARDS")          = BN_MAX_BOARDS;
+  m.attr("NUM_BEAMS")           = BN_NUM_BEAMS;
+  m.attr("NUM_SCALERS")         = BN_NUM_SCALERS;
 
   py::enum_<beacon_trigger_type>(m,"TrigType")
     .value("NP_TRIG_NONE", beacon_trigger_type::BN_TRIG_NONE)
