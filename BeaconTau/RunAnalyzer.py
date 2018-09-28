@@ -63,7 +63,7 @@ class RunAnalyzer():
                     entry_code = entry_code.replace(subs[i], str(val))
                 result = eval(entry_code)
                 results.append(result)
-        
+
         else: # Then this expression is actually a constant
             results = [eval(code)]* len(self.file_reader.headers)
             
@@ -114,14 +114,13 @@ class RunAnalyzer():
 
     def scan(self, expression):
         codes = self._split_expressions(expression)
-        print(codes)
         values = [self.get(code) for code in codes]
-        print(values)
         entries = 0
-        for entry, vals in zip(*values):
+        print('Entry\t' + expression.replace(':', '\t'))
+        for entry, vals in enumerate(zip(*values)):
             to_print = str(entry)
             for val in vals:
-                to_print + '\t' + str(val)
+                to_print =  to_print + '\t' + str(val)
             print(to_print)
             entries += 1
             if entry > 0 and (entry+1) % 25 == 0:
