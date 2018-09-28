@@ -37,7 +37,7 @@ class RunAnalyzer():
     def _split_expressions(self, code:str):
         return code.split(':')
 
-    def get(self, code: str):
+    def _get_one(self, code: str):
 
         var_list = []
         while True:
@@ -69,6 +69,11 @@ class RunAnalyzer():
             
         return results
 
+    def get(self, expression: str):
+        codes = self._split_expressions(expression)
+        values = [self._get_one(code) for code in codes]
+        return values, codes
+
     def get_attribute(self, attribute):
 
         values = None
@@ -94,27 +99,50 @@ class RunAnalyzer():
 
         return values
 
-    def draw(self, attribute, show = False):
+    def draw(self, expression, option = None, bins = None, range = None):
         plt.ion()
         plt.show()
-        values = self.get(attribute)
-        if values is not None:
-            fig = plt.figure()
-            mng = plt.get_current_fig_manager()
-            mng.resize(*mng.window.maxsize())
-            plt.xlabel('Entry')
-            plt.ylabel(attribute)
-            plt.title('Run ' + str(self.run))
-            lines = plt.plot(values)
-            labels = [attribute + '[' + str(c) + ']' for c in range(len(lines))]
-            plt.legend(lines, labels)
-            if show is True:
-                plt.show()
-            return fig
+        values, names = self.get(expression)
 
+        ax = plt.gca()
+
+        h = None
+        if len(values) == 1:
+            # 1D histogram
+            h = plt.hist(values, bins = bins, range = range)            
+            ax.set_xlabel(names[0])
+        
+        if len(values) == 2:
+            if option == 'col':
+                h = plt.hist2d(values[0], values[1], bins = bins, range = range)
+            elif option == 'line':
+                h = plt.plot(values[0], values[1])
+            else:
+                h = plt.scatter(values[0], values[1])
+
+            ax.set_xlabel(names[0])
+            ax.set_ylabel(names[1])
+        if len(values) >= 3:
+            colorable = None
+            if 'col' in option:                
+                h = plt.hist2d(values[0], values[1], weights = values[2])
+                if 'z' in option:
+                    colorable = h[3]
+            else:
+                h = plt.scatter(values[0], values[1], c = values[2])
+                if 'z' in option:
+                    colorable = h
+            if colorable is not None:
+                cbar = plt.gcf().colorbar(colorable)
+                cbar.set_label(names[2])
+                
+            ax.set_xlabel(names[0])
+            ax.set_ylabel(names[1])
+        ax.set_title(expression)
+        return h
+    
     def scan(self, expression):
-        codes = self._split_expressions(expression)
-        values = [self.get(code) for code in codes]
+        values = self.get(expression)
         entries = 0
         print('Entry\t' + expression.replace(':', '\t'))
         for entry, vals in enumerate(zip(*values)):
