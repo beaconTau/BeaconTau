@@ -12,50 +12,92 @@ class RunAnalyzer():
     def __init__(self, run, data_dir):
         self.run = run
         self.file_reader = FileReader(run, data_dir)
-        self.extracted_values = dict()
+        self._get_cache = {}
+
+        self._attributes = {}
+        for c in [Status, Header, Event]:
+            # Here we sort the list of strings in order from longest to shortest
+            self._attributes[c.__name__] = sorted([a for a in vars(c) if '__' not in a], key=len, reverse=True)
+        print(self._attributes)
 
     def __repr__(self):
         return ('<BeaconTau.RunAnalyzer for run ' + str(self.run) + '>')
 
-    def split_attribute(self, attribute):
-        attributes = attribute.split(':')
-        return attributes
 
-    def cached_extract(self, attribute):
-        if attribute in self.extracted_values:
-            return self.extracted_values[attribute]
-        else:
-            values = self.extract(attribute)
-            if values is not None:
-                self.extracted_values[attribute] = values
-            return values
+    def _substitute(self, code: str, matches):
+        for c, attrs in self._attributes.items():
+            for a in attrs:
+                if a in code:
+                    sub_codes = code.split(a, 1)
+                    new_code = sub_codes[0] + '{'  + str(len(matches)) + '}'+ sub_codes[1]
+                    matches.append(a)
+                    return new_code, matches
+        return code, matches
 
-    def extract(self, attribute):
+    def _split_expressions(self, code:str):
+        return code.split(':')
+
+    def get(self, code: str):
+
+        var_list = []
+        while True:
+            new_code, var_list = self._substitute(code, var_list)
+            if new_code == code:
+                break
+            else:
+                code = new_code
+
+        attributes = []
+        for var in var_list:
+            attributes.append(self.get_attribute(var))
+
+        subs = ['{' + str(i) + '}' for i in range(len(attributes))]
+
+        results = []
+
+        if len(attributes) > 0:
+            for vals in zip(*attributes):
+                #print(vals)
+                entry_code = code
+                for i, val in enumerate(vals):
+                    entry_code = entry_code.replace(subs[i], str(val))
+                result = eval(entry_code)
+                results.append(result)
+        
+        else: # Then this expression is actually a constant
+            results = [eval(code)]* len(self.file_reader.headers)
+            
+        return results
+
+    def get_attribute(self, attribute):
 
         values = None
-        try:
-            values = [s.__getattribute__(attribute) for s in self.file_reader.statuses]
-            return values
-        except:
-            pass
-        try:
-            values = [h.__getattribute__(attribute) for h in self.file_reader.headers]
-            return values
-        except:
-            pass
-        try:
-            values = [e.__getattribute__(attribute) for e in self.file_reader.events]
-            return values
-        except:
-            pass
 
-        raise AttributeError(attribute + ' is not something in BeaconTau.Status, BeaconTau.Header, or BeaconTau.Event!')
-        return None
+        # first try the cache
+        if attribute in self._get_cache:
+            values = self._get_cache[attribute]
+
+        if values is None:
+            if attribute in self._attributes['Status']:
+                values = [s.__getattribute__(attribute) for s in self.file_reader.statuses]
+            elif attribute in self._attributes['Header']:
+                values = [h.__getattribute__(attribute) for h in self.file_reader.headers]
+            elif attribute in self._attributes['Event']:
+                values = [e.__getattribute__(attribute) for e in self.file_reader.events]
+
+        # Add it to the cache if we have it
+        if values is not None:
+            self._get_cache[attribute] = values
+        # Otherwise, we complain
+        else:
+            raise AttributeError(attribute + ' is not something in BeaconTau.Status, BeaconTau.Header, or BeaconTau.Event!')
+
+        return values
 
     def draw(self, attribute, show = False):
         plt.ion()
         plt.show()
-        values = self.cached_extract(attribute)
+        values = self.get(attribute)
         if values is not None:
             fig = plt.figure()
             mng = plt.get_current_fig_manager()
@@ -70,19 +112,23 @@ class RunAnalyzer():
                 plt.show()
             return fig
 
-    def scan(self, attribute):
-        values = self.cached_extract(attribute)
-        if values is not None:
-            entries = 0
-            for entry, value in enumerate(values):
-                to_print = str(entry) + '\t' + str(value)
-                print(to_print)
-                entries += 1
-                if entry > 0 and (entry+1) % 25 == 0:
-                    keys = input('Press q to quit: ')
-                    if len(keys) > 0 and keys[0] == 'q':
-                        break
-            print('Finished scanning ' + str(entries) + ' entries')
+    def scan(self, expression):
+        codes = self._split_expressions(expression)
+        print(codes)
+        values = [self.get(code) for code in codes]
+        print(values)
+        entries = 0
+        for entry, vals in zip(*values):
+            to_print = str(entry)
+            for val in vals:
+                to_print + '\t' + str(val)
+            print(to_print)
+            entries += 1
+            if entry > 0 and (entry+1) % 25 == 0:
+                keys = input('Press q to quit: ')
+                if len(keys) > 0 and keys[0] == 'q':
+                    break
+        print('Finished scanning ' + str(entries) + ' entries')
 
     def events(self):
         for entry in range(len(self.file_reader.headers)):
@@ -92,7 +138,7 @@ class RunAnalyzer():
         return EventAnalyzer(self.file_reader.headers[entry],  self.file_reader.events[entry])
 
     def get_event(self, event_number):
-        event_numbers = self.cached_extract('event_number')
+        event_numbers = self.get('event_number')
         try:
             entry = event_numbers.index(event_number)
             return self.get_entry(entry)
