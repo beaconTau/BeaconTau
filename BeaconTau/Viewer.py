@@ -106,7 +106,7 @@ class Viewer():
             self.run_selection.set_val(str(self.run))
 
     def __repr__(self):
-        return '<BeaconTau.Viewer run ' + self.run + ' event ' + self.event_analyzer.header.event_number + '>'
+        return '<BeaconTau.Viewer run ' + str(self.run) + ' event ' + str(self.event_analyzer.header.event_number) + '>'
 
     def update_header_text(self):
         if self.trigger_beam_texts is None:
