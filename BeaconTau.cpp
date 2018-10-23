@@ -11,7 +11,6 @@
 
 namespace py = pybind11;
 
-
 /**
  * @namespace _BeaconTau
  * @brief The c++ part of the BeaconTau python module
@@ -148,24 +147,21 @@ namespace _BeaconTau {
    * @brief Open the binary data and put it in memory, gzipped or otherwise
    */
   class FileReader {
+
   public:
     /**
      * @class Vector
      * @brief A container for easy access in python that dynamically reads Beacon data files
      * 
+     * Designed to iterate forwards over the data, will be a bit inefficient otherwise.
      */
     template<class Content> class Vector {
     private:
 
       bool maybe_load_file(std::size_t file_index) const {
-	// std::cout << "maybe_load_file" << "\t" <<  file_index << std::endl;
 	auto it = std::find(read_order.begin(), read_order.end(), file_index);
-	// for(auto v : read_order){
-	//   std::cout << v << " in memory " << std::endl;
-	// }
 	if(it != read_order.end()){
-	  // then we are already in memory, so do nothing
-	  // std::cout << "already loaded " << *it << std::endl;
+	  // then the file is already in memory, so do nothing
 	  return false;
 	}
 	else {
@@ -174,18 +170,19 @@ namespace _BeaconTau {
 	  auto& md = meta_data.at(file_index);
 	  read_file(md.name, vec); // then get the contents of the first file
 	  if(file_index > 0){
+	    if(meta_data.at(file_index - 1).last_index == 0){
+	      maybe_load_file(file_index - 1);
+	    }
 	    md.first_index = meta_data.at(file_index - 1).last_index;
 	  }
 	  md.last_index = md.first_index + vec.size();
 	  md.file_index = file_index;
 	  read_order.push_front(file_index);
-	  // std::cout << "size = " << contents[file_index].size() << std::endl;
 	  return true;
 	}
       }
 
       int maybe_pop_some_contents() const {
-	// std::cout << "maybe_pop_some_contents" << std::endl;
 	int n_popped = 0;
 	if(max_files_in_memory > 0){
 	  while(read_order.size() >= max_files_in_memory){
@@ -200,9 +197,8 @@ namespace _BeaconTau {
       }
 
       std::size_t which_file(size_t content_index) const {
-	// std::cout << "which_file" << "\t" << content_index << std::endl;
+	// check the most frequent case, that the last file is the one we want.
 	if(last_meta_data && content_index >= last_meta_data->first_index && content_index < last_meta_data->last_index){
-	  // std::cout << "cache match! " << content_index  << std::endl;
 	  maybe_load_file(last_meta_data->file_index); // double check it's loaded... which I don't think is guarenteed
 	  return last_meta_data->file_index;
 	}
@@ -212,7 +208,6 @@ namespace _BeaconTau {
 	for(std::size_t file_index = 0; file_index < meta_data.size(); file_index++){
 	  auto md = get_meta_data(file_index);
 	  if(content_index >= md->first_index && content_index < md->last_index){
-	    // std::cout << "Trying " << file_index << std::endl;
 	    maybe_load_file(file_index); // double check it's loaded... which I don't think is guarenteed
 	    last_meta_data = md;
 	    return file_index;
@@ -252,51 +247,12 @@ namespace _BeaconTau {
       mutable std::map<size_t, std::vector<Content> > contents; ///< Maps index in meta_data to contents of the files in the directory
       mutable std::deque<size_t> read_order; ///< Tracks the order in which files are read in memory
       mutable const FileMetaData* last_meta_data = nullptr;
-      
 
-    public:
-
-      // /**
-      //  * @class const_iterator
-      //  * @brief Definitely not STL compliant const_iterator for our _BeaconTau::Vector
-      //  */
-      // class const_iterator {
-      // private:
-      // 	std::size_t content_index;
-      // 	std::size_t file_index;
-      // 	const Vector* v;
-      // public:
-      // 	const_iterator(const Vector* V = nullptr, std::size_t file_index) :
-      // 	  v(V), file_index(file_index) {}
-
-      // 	const_iterator& operator++(){
-	  
-      // 	  size_t file_index = which_file(content_index);
-      // 	  return *this;
-      // 	}
-
-      // 	const_iterator& operator--(){
-      // 	  --index;
-      // 	  return *this;
-      // 	}
-
-      // 	const Content& operator*(){
-      // 	  return v->at(index);
-      // 	}
-
-      // 	const Content* operator->(){
-      // 	  return &v->at(index);
-      // 	}
-      // };
-      
-      
-      Vector(const std::string& directory_name) : dir_name(directory_name) {
-	std::cout << "Vector" << std::endl;	
+    public:           
+      Vector(const std::string& directory_name, size_t max_files_in_RAM = 0)
+	: dir_name(directory_name), max_files_in_memory(max_files_in_RAM)
+      {
 	std::vector<std::string> names = list_files(dir_name); // first get the file names
-
-	for(auto& n : names){
-	  std::cout << n << std::endl;
-	}
 	if(names.size()==0){
 	  std::stringstream error_message;
 	  error_message << "Warning in " << __PRETTY_FUNCTION__ << " no files in " << dir_name;
@@ -309,58 +265,30 @@ namespace _BeaconTau {
       }
 
       const Content& at(size_t content_index) const {
-	std::cout << "at" << std::endl;
 	size_t file_index = which_file(content_index);
-	std::cout << "at() the file_index = " << file_index << std::endl;
 	const auto& md = meta_data[file_index];
-	std::cout << md.name << std::endl;
-	std::cout << "content_index = " << content_index
-		  << ", md.first_index = << " << md.first_index
-		  << ", content_index - md.first_index = " << content_index - md.first_index
-		  << std::endl;
 	return contents[file_index].at(content_index - md.first_index);
       }
-
-      const Content& operator[](size_t content_index) const {
-	std::cout << "[]" << std::endl;	
-	return at(content_index);
-      }
-
-      // const_iterator begin() const {return const_iterator(this, 0);}
-      // const_iterator end() const {return const_iterator(this, meta_data.size();}
-      
+      std::size_t size() const {
+	return get_meta_data(meta_data.size()-1)->last_index;
+      }      
     };
     
     FileReader(int run, const std::string& base_dir)
       : run(run), base_dir(base_dir), run_dir(base_dir + "/run" + std::to_string(run) + "/"),
-	headers(run_dir + "header"), statuses(run_dir + "status"), events(run_dir + "event")
-    {
-      // event_file_names =  _BeaconTau::list_files(run_dir + "event");
-      // header_file_names = _BeaconTau::list_files(run_dir + "header");
-      // status_file_names = _BeaconTau::list_files(run_dir + "status");
-
-      // for(const auto& header_file_name : header_file_names){
-      // 	_BeaconTau::read_file(header_file_name, headers);
-      // }
-      // for(const auto& status_file_name : status_file_names){
-      // 	_BeaconTau::read_file(status_file_name, statuses);
-      // }
-      // for(const auto& event_file_name : event_file_names){
-      // _BeaconTau::read_file(event_file_name, events);
-      // }
-    }
+	// somewhat random numbers picked here for the max_files in memory
+	// should be about 10 MB per type. Obviously this means more reading per iteration.
+	// @todo make this configurable somehow...
+	headers(run_dir + "header", 1000),
+	statuses(run_dir + "status", 300),
+	events(run_dir + "event", 3) 
+    { }
     int run; ///< Which run
     std::string base_dir; ///< The data directory containing all the runs
     std::string run_dir; ///< The directory of the run
-    // std::vector<std::string> event_file_names;
-    // std::vector<std::string> header_file_names;
-    // std::vector<std::string> status_file_names;
-    // std::vector<beacon_header> headers;
-    // std::vector<beacon_status> statuses;
-    // std::vector<beacon_event> events;
-    Vector<beacon_header> headers;
-    Vector<beacon_status> statuses;
-    Vector<beacon_event> events;
+    Vector<beacon_header> headers; ///< Automagically loaded beacon headers
+    Vector<beacon_status> statuses; ///< Automagically loaded beacon statuses
+    Vector<beacon_event> events; ///< Automagically loaded beacon events
   };
 
 }
@@ -450,7 +378,6 @@ PYBIND11_MODULE(_BeaconTau, m) {
     .def_readonly("dynamic_beam_mask",  &beacon_status::dynamic_beam_mask)
     .def("__repr__", [](const beacon_status& st){
 		       static std::string s;
-
 		       s = "<Status at " + std::to_string(st.readout_time) + "."  + std::to_string(st.readout_time_ns) + ">";
 		       return s;
 		     });
@@ -461,20 +388,31 @@ PYBIND11_MODULE(_BeaconTau, m) {
 			static std::string s;
 			s = "<BeaconTau.FileReader for run " + std::to_string(r.run) + ">";
 			return s;
-		      })
+		      }) 
     .def_readonly("events", &_BeaconTau::FileReader::events)
-    // .def_readonly("events2", &_BeaconTau::FileReader::events2)
     .def_readonly("headers", &_BeaconTau::FileReader::headers)
     .def_readonly("statuses", &_BeaconTau::FileReader::statuses);
 
-  py::class_<_BeaconTau::FileReader::Vector<beacon_event> >(m, "FileReader::EventVector")
-    .def(py::init<const std::string&>())
-    .def("__getitem__",  [](const _BeaconTau::FileReader::Vector<beacon_event> &v, size_t i){
-			   std::cout << "hello" << std::endl;
-			   auto& e = v.at(i);
-			   std::cout << e.event_number << std::endl;
-			   return e;
-			 });
+
+  ///@todo is this a reasonable use case a macro?
+  py::class_<_BeaconTau::FileReader::Vector<beacon_header> >(m, "FileReader::Headers")
+    .def(py::init<const std::string&, size_t>())
+    .def("__getitem__",  &_BeaconTau::FileReader::Vector<beacon_header>::at)
+    .def("__len__",  &_BeaconTau::FileReader::Vector<beacon_header>::size);
+
+  
+  py::class_<_BeaconTau::FileReader::Vector<beacon_status> >(m, "FileReader::Statuses")
+    .def(py::init<const std::string&, size_t>())
+    .def("__getitem__",  &_BeaconTau::FileReader::Vector<beacon_status>::at)
+    .def("__len__",  &_BeaconTau::FileReader::Vector<beacon_status>::size);  
+
+
+  py::class_<_BeaconTau::FileReader::Vector<beacon_event> >(m, "FileReader::Events")
+    .def(py::init<const std::string&, size_t>())
+    .def("__getitem__",  &_BeaconTau::FileReader::Vector<beacon_event>::at)
+    .def("__len__",  &_BeaconTau::FileReader::Vector<beacon_event>::size);  
+
+  
   
 }
 
