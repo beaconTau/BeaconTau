@@ -4,7 +4,7 @@ LIBBEACONDIR := ../libbeacon
 CXXFLAGS := -O3 -shared -std=c++11 -fPIC
 PYBIND11_INCLUDES := `python3 -m pybind11 --includes`
 LIB_SUFFIX = `python3-config --extension-suffix`
-
+LIBS := -lstdc++ -lz -lbeacon
 beacon:
 	@echo "Building BeaconTau v${BEACON_TAU_VERSION}"
 	python3 setup.py sdist
@@ -14,4 +14,4 @@ beacon:
 
 devel:
 	@echo "Building BeaconTau against "$(LIBBEACONDIR)
-	$(CC) $(CXXFLAGS) $(PYBIND11_INCLUDES) -I$(LIBBEACONDIR) -L$(LIBBEACONDIR) BeaconTau.cpp -o _BeaconTau$(LIB_SUFFIX)
+	$(CC) $(CXXFLAGS) $(PYBIND11_INCLUDES) -I$(LIBBEACONDIR) -L$(LIBBEACONDIR) $(LIBS) BeaconTau.cpp -o _BeaconTau$(LIB_SUFFIX)
