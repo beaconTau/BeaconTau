@@ -10,9 +10,6 @@
 
 namespace py = pybind11;
 
-
-
-
 PYBIND11_MODULE(_BeaconTau, m) {
   m.doc() = "Python module for the BEACON experiment";
   m.def("struct_sizes", &_BeaconTau::struct_sizes, "Get a string showing the struct sizes");

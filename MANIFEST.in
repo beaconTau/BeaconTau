@@ -1,2 +1,4 @@
 include README.md
-include pyBeacon.cpp
+include BeaconTau.cpp
+include FileReader.h
+include FileReader.cpp

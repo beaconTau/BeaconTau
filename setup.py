@@ -11,6 +11,7 @@ from distutils.command.clean import clean
 
 import subprocess
 import tempfile
+import os
 
 # Try this first?
 subprocess.call(["python3", "-m", "install", "pybind11"])
@@ -76,7 +77,7 @@ setup(
     url="https://github.com/beaconTau/BeaconTau",
     packages=['BeaconTau', 'BeaconTau/Flame'],
     ext_modules=[
-        Extension('_BeaconTau', ['BeaconTau.cpp'],
+        Extension('_BeaconTau', ['FileReader.cpp',  'BeaconTau.cpp'],
                   include_dirs = [libbeacon_dir.name, pybind11_include_dir],
                   library_dirs = ['/usr/local/lib'],
                   libraries=['z'],
