@@ -242,13 +242,13 @@ namespace _BeaconTau {
       }
       
       const std::string dir_name; ///< String containing the name of the directory with the BEACON files
-      size_t max_files_in_memory = 0; ///< The maximum number files to allow in memory, zero means unlimited
       mutable std::vector<FileMetaData> meta_data; ///< The file names and indices of the first and last entries
       mutable std::map<size_t, std::vector<Content> > contents; ///< Maps index in meta_data to contents of the files in the directory
       mutable std::deque<size_t> read_order; ///< Tracks the order in which files are read in memory
       mutable const FileMetaData* last_meta_data = nullptr;
 
-    public:           
+    public:
+      std::size_t max_files_in_memory = 0; ///< The maximum number files to allow in memory, zero means unlimited
       Vector(const std::string& directory_name, size_t max_files_in_RAM = 0)
 	: dir_name(directory_name), max_files_in_memory(max_files_in_RAM)
       {
@@ -290,7 +290,6 @@ namespace _BeaconTau {
     Vector<beacon_status> statuses; ///< Automagically loaded beacon statuses
     Vector<beacon_event> events; ///< Automagically loaded beacon events
   };
-
 }
 
 
@@ -393,26 +392,17 @@ PYBIND11_MODULE(_BeaconTau, m) {
     .def_readonly("headers", &_BeaconTau::FileReader::headers)
     .def_readonly("statuses", &_BeaconTau::FileReader::statuses);
 
+#define BEACON_FILE_READER_VECTOR(type, name)				\
+  py::class_<_BeaconTau::FileReader::Vector<type> >(m, name)            \
+    .def(py::init<const std::string&, size_t>())			\
+    .def("__getitem__", &_BeaconTau::FileReader::Vector<type>::at)      \
+    .def("__len__",     &_BeaconTau::FileReader::Vector<type>::size)    \
+    .def_readwrite("max_files_in_memory", &_BeaconTau::FileReader::Vector<type>::max_files_in_memory) \
+    ;
 
-  ///@todo is this a reasonable use case a macro?
-  py::class_<_BeaconTau::FileReader::Vector<beacon_header> >(m, "FileReader::Headers")
-    .def(py::init<const std::string&, size_t>())
-    .def("__getitem__",  &_BeaconTau::FileReader::Vector<beacon_header>::at)
-    .def("__len__",  &_BeaconTau::FileReader::Vector<beacon_header>::size);
-
-  
-  py::class_<_BeaconTau::FileReader::Vector<beacon_status> >(m, "FileReader::Statuses")
-    .def(py::init<const std::string&, size_t>())
-    .def("__getitem__",  &_BeaconTau::FileReader::Vector<beacon_status>::at)
-    .def("__len__",  &_BeaconTau::FileReader::Vector<beacon_status>::size);  
-
-
-  py::class_<_BeaconTau::FileReader::Vector<beacon_event> >(m, "FileReader::Events")
-    .def(py::init<const std::string&, size_t>())
-    .def("__getitem__",  &_BeaconTau::FileReader::Vector<beacon_event>::at)
-    .def("__len__",  &_BeaconTau::FileReader::Vector<beacon_event>::size);  
-
-  
+  BEACON_FILE_READER_VECTOR(beacon_header, "FileReader::Headers")
+  BEACON_FILE_READER_VECTOR(beacon_status, "FileReader::Statuses")
+  BEACON_FILE_READER_VECTOR(beacon_event,  "FileReader::Events")
   
 }
 
