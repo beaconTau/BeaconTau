@@ -90,12 +90,6 @@ And you should be good to go.
 Remember that you will need to do `source BeaconTau-env/bin/activate` each time you want to use this python module!
 
 
-
-## Flame (Facility for Live Action Monitoring of Events)
-
-A prototype online browser based event on BeaconTau and bokeh.
-As yet it is unstable and poorly documented.
-
 ## Version history
 
 See [RELEASES.md](https://github.com/beaconTau/BeaconTau/blob/master/RELEASES.md).
