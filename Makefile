@@ -36,4 +36,4 @@ LIBS := -lstdc++ -lz -lbeacon
 
 devel:
 	@echo "Building BeaconTau against "$(LIBBEACONDIR)
-	$(CC) $(CXXFLAGS) $(PYBIND11_INCLUDES) -I$(LIBBEACONDIR) -L$(LIBBEACONDIR) $(LIBS) BeaconTau.cpp -o _BeaconTau$(LIB_SUFFIX)
+	$(CC) $(CXXFLAGS) $(PYBIND11_INCLUDES) -I$(LIBBEACONDIR) -L$(LIBBEACONDIR) $(LIBS) BeaconTau.cpp FileReader.cpp -o _BeaconTau$(LIB_SUFFIX)
