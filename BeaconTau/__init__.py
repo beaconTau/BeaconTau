@@ -4,6 +4,7 @@ from .EventAnalyzer import EventAnalyzer
 from .RunAnalyzer import RunAnalyzer
 from .DataDirectory import DataDirectory
 from .Viewer import Viewer
+from .Viewer import EventSelector
 
 name = "BeaconTau"
 

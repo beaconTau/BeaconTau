@@ -43,6 +43,8 @@ class Viewer():
         self.playing = False
 
         self.run_selection = None
+        self.entry_selection = None
+        self.event_selection = None
         self.domain_selection = None
         self.trigger_beam_texts = None
 
@@ -101,9 +103,20 @@ class Viewer():
             self.event_analyzer = self.run_analyzer.get_entry(self.entry)
             self.update()
 
-        # Put the run we actually have back in the text box
-        if self.run_selection is not None:
-            self.run_selection.set_val(str(self.run))
+
+    def set_entry(self, entry: int):
+        entry = int(entry)
+        if entry is not self.entry:
+            self.entry = entry
+            self.event_analyzer = self.run_analyzer.get_entry(self.entry)
+            self.update()
+
+
+    def set_event(self, event_number: int):
+        event_number = int(event_number)
+        event_numbers = self.run_analyzer.get('event_number')[0][0] # Is that right???
+        entry = event_numbers.index(event_number)
+        self.set_entry(entry)
 
     def __repr__(self):
         return '<BeaconTau.Viewer run ' + str(self.run) + ' event ' + str(self.event_analyzer.header.event_number) + '>'
@@ -114,7 +127,7 @@ class Viewer():
             for beam in range(NUM_BEAMS):
                 height = 0.03
                 x = 0.93
-                y = 0.89 - (beam+1)*height
+                y = 0.84 - (beam+1)*height
                 self.trigger_beam_texts[beam] = plt.figtext(x, y, 'Beam ' + str(beam).zfill(2), bbox=dict(facecolor='white'))
 
         for beam in range(NUM_BEAMS):
@@ -124,6 +137,7 @@ class Viewer():
                 self.trigger_beam_texts[beam].set_backgroundcolor('white')
 
     def update(self):
+        plt.ioff()
         for board in self.event_analyzer.event.data:
 
             # TODO for multiple boards, maybe that's overkill...
@@ -148,9 +162,11 @@ class Viewer():
                     else:
                         self.axes.flat[chan].plot(self.event_analyzer.freqs()[1:], self.event_analyzer.channel_psd(chan)[1:], color)
                         self.axes.flat[chan].set_ylabel('PSD (mV**2 / MHz)')
-            plt.suptitle('Run ' + str(self.run) + ' Event ' + str(self.event_analyzer.event.event_number))
 
-            self.update_header_text()
+        plt.figure(self.fig.number)
+        plt.suptitle('Run ' + str(self.run) + ' Event ' + str(self.event_analyzer.event.event_number))
+
+        self.update_header_text()
 
         hover_color = 'white'
         # For these btton axes the list is [left, bottom, width, height]
@@ -174,12 +190,35 @@ class Viewer():
             self.prev_button = Button(prev_ax, 'Prev', hovercolor='yellow', color='lightyellow')
             self.prev_button.on_clicked(self.backward)
 
-        if self.run_selection is None:
-            run_ax = plt.axes([0.02, 0.95, 0.05, 0.03])
-            self.run_selection = TextBox(run_ax, 'Run', initial = str(self.run), color = 'white',  hovercolor = 'lightgrey')
-            self.run_selection.on_submit(self.set_run)
 
         if self.domain_selection is None:
-            domain_ax = plt.axes([0.02, 0.89, 0.05, 0.06])
+            domain_ax = plt.axes([0.92, 0.84, 0.06, 0.05])
             self.domain_selection = RadioButtons(domain_ax, ('Time', 'Freq'))
             self.domain_selection.on_clicked(self.switch_domain)
+
+        plt.ion()
+        plt.show()
+
+
+class EventSelector():
+    def __init__(self, parent = None):
+        self.parent = parent
+
+        self.fig = plt.figure()
+        
+        self.run_ax = plt.axes([0.3, 0.9, 0.5, 0.1])
+        self.run_selection = TextBox(self.run_ax, 'Run', initial = str(self.parent.run), color = 'white',  hovercolor = 'lightgrey')
+        self.run_selection.on_submit(self.parent.set_run)
+        self.run_selection.set_val(str(self.parent.run))
+
+        self.entry_ax = plt.axes([0.3, 0.8, 0.5, 0.1])
+        self.entry_selection = TextBox(self.entry_ax, 'Entry', initial = str(self.parent.entry), color = 'white',  hovercolor = 'lightgrey')
+        self.entry_selection.on_submit(self.parent.set_entry)
+        self.entry_selection.set_val(str(self.parent.entry))
+
+        self.event_ax = plt.axes([0.3, 0.7, 0.5, 0.1])
+        self.event_selection = TextBox(self.event_ax, 'Event', initial = str(self.parent.event_analyzer.header.event_number), color = 'white',  hovercolor = 'lightgrey')
+        self.event_selection.on_submit(self.parent.set_event)
+        self.event_selection.set_val(str(self.parent.event_analyzer.header.event_number))
+        
+        self.fig.show()
