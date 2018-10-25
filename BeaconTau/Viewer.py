@@ -4,7 +4,6 @@ from .RunAnalyzer import RunAnalyzer
 from matplotlib import pyplot as plt
 from matplotlib import animation as animate
 
-#from matplotlib.widgets import Slider, Button, RadioButtons
 from matplotlib.widgets import Button, TextBox, RadioButtons
 
 from enum import Enum
@@ -16,10 +15,17 @@ class Domain(Enum):
 
 class Viewer():
     """
-    A class to manage the viewing of events.
-    And that's it.
-    """
+    A class for looking at BEACON events.
 
+    Keybindings
+       space : play/pause
+       right : next event
+       left  : previous event
+       up    : go 1000 events forward
+       down  : go 1000 events back
+       d     : switch time/freq domain
+       j     : jump to event
+    """
     def __init__(self, run = None, data_dir = None):
         self.dd = DataDirectory(data_dir)
 
@@ -220,9 +226,6 @@ class Viewer():
             domain_ax = plt.axes([0.92, 0.84, 0.06, 0.05])
             self.domain_selection = RadioButtons(domain_ax, ('Time', 'Freq'))
             self.domain_selection.on_clicked(self.switch_domain)
-
-        #plt.ion()
-        #plt.show()
 
     def make_event_selector(self, event):
         self.stop_play(event)
