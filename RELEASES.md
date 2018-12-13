@@ -5,6 +5,16 @@ Releases (> 0.1.0) correspond to the version hosted on [pypi.org](https://pypi.o
 The version hosted on github may be ahead of the most recent pypi, if this is the case then this tag is unstable, may be moved or removed, as it represents a version under active development.
 The [libbeacon](https://github.com/beaconTau/libbeacon) library is tagged in sync with the BeaconTau (setup.py git-pulls in the matching version).
 
+## [0.1.6] - 2018-12-13
+### Changed
+- All data files are now read in lazily resulting in a big (O(30-50)?) speedup for looking at just a few events.
+- Version number now stored in production code rather than setup.py, can be inspected with BeaconTau.__version__.
+### Added
+- Add standalone Viewer class for inspecting events, with some keyboard shortcuts (!) and proper matplotlib blitting.
+- A profiling script,  example/profile.py to compare data reading speed between beaconroot and BeaconTau.
+### Removed
+- Incomplete online monitor (FLAME) is officially abandoned, use [https://users.rcc.uchicago.edu/~cozzyd/monutau/](monutau) instead.
+
 
 ## [0.1.5] - 2018-09-26
 
