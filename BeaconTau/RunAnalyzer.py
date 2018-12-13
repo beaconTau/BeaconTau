@@ -18,7 +18,7 @@ class RunAnalyzer():
         for c in [Status, Header, Event]:
             # Here we sort the list of strings in order from longest to shortest
             self._attributes[c.__name__] = sorted([a for a in vars(c) if '__' not in a], key=len, reverse=True)
-        print(self._attributes)
+        #print(self._attributes)
 
     def __repr__(self):
         return ('<BeaconTau.RunAnalyzer for run ' + str(self.run) + '>')
