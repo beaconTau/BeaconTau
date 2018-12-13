@@ -1,4 +1,4 @@
-BEACON_TAU_VERSION:= $(shell grep 'libbeacon_version_tag = ' setup.py | sed s,'libbeacon_version_tag = ',,)
+BEACON_TAU_VERSION:= $(shell grep '__version__ = ' BeaconTau/__init__.py | sed s,'__version__ = ',,)
 
 
 ##########################################################################################

@@ -13,6 +13,16 @@ import subprocess
 import tempfile
 import os
 
+import re
+
+libbeacon_version_tag = "Unknown"
+with open('BeaconTau/__init__.py') as version_file:
+    for line in version_file:
+        if '__version__' in line:
+            libbeacon_version_tag = line[:-1].replace('__version__ = ', '').replace('\"', '', 2)
+            print(libbeacon_version_tag)
+            break
+
 # Try this first?
 subprocess.call(["python3", "-m", "install", "pybind11"])
 try:
@@ -34,7 +44,6 @@ except ImportError:
 
 pybind11_include_dir = pybind11.get_include()
 libbeacon_dir = tempfile.TemporaryDirectory()
-libbeacon_version_tag = "0.1.6"
 
 
 class BeaconTauClean(clean):
@@ -75,7 +84,7 @@ setup(
     long_description=long_description,
     license='GPL3',
     url="https://github.com/beaconTau/BeaconTau",
-    packages=['BeaconTau', 'BeaconTau/Flame'],
+    packages=['BeaconTau'],
     ext_modules=[
         Extension('_BeaconTau', ['FileReader.cpp',  'BeaconTau.cpp'],
                   include_dirs = [libbeacon_dir.name, pybind11_include_dir],

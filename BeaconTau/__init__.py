@@ -5,7 +5,7 @@ from .RunAnalyzer import RunAnalyzer
 from .DataDirectory import DataDirectory
 from .Viewer import Viewer
 
-name = "BeaconTau"
+__version__ = "0.1.6"
 
 def main():
     dd = DataDirectory()
