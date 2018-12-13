@@ -15,7 +15,7 @@ From your python prompt.
 >>> import BeaconTau as bt
 >>> dd = bt.DataDirectory()      # Will look in BEACON_DATA_DIR
 >>> r = dd.run(99)               # to get run 99, if you have it
->>> r.draw(trigger_thresholds')  # *limited* ROOT-style draw functionality is available, emphasis on limited
+>>> r.draw('trigger_thresholds')  # *limited* ROOT-style draw functionality is available, emphasis on limited
 >>> e = r.get_entry(0)           # You can access events by entry (index) where 0 is the first event in the run...
 >>> e = r.get_event(99000000002) # or by the full event number (provided it is in the run)
 >>> e.plot()                     # Quickly plot them in the time domain

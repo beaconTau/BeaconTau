@@ -2,8 +2,8 @@
 
 ## Introduction
 Releases (> 0.1.0) correspond to the version hosted on [pypi.org](https://pypi.org/manage/project/beacontau/releases/), which can be obtained via `pip install BeaconTau`.
-The version hosted on github may be ahead of the most recent pypi, if this is the case then this tag is unstable, may be moved or removed, as it represents a release under active development.
-The [libbeacon](https://github.com/beaconTau/libbeacon) library is tagged in sync with the BeaconTau since setup.py pulls in the matching version.
+The version hosted on github may be ahead of the most recent pypi, if this is the case then this tag is unstable, may be moved or removed, as it represents a version under active development.
+The [libbeacon](https://github.com/beaconTau/libbeacon) library is tagged in sync with the BeaconTau (setup.py git-pulls in the matching version).
 
 
 ## [0.1.5] - 2018-09-26

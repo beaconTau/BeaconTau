@@ -229,7 +229,7 @@ class Viewer():
 
     def make_event_selector(self, event):
         self.stop_play(event)
-        self.event_selector = EventSelector(parent = self)
+        self.event_selector = Viewer.EventSelector(parent = self)
 
 
     def handle_keys(self, event):
@@ -258,43 +258,56 @@ class Viewer():
             self.make_event_selector(event)
 
 
-class EventSelector():
-    def __init__(self, parent = None):
-        self.parent = parent
+    class EventSelector():
+    	def __init__(self, parent = None):
+    	    self.parent = parent
 
-        self.fig = plt.figure()
+    	    self.fig = plt.figure()
 
-        self.run_ax = plt.axes([0.3, 0.9, 0.5, 0.1])
-        self.run_selection = TextBox(self.run_ax, 'Run', initial = str(self.parent.run), color = 'white',  hovercolor = 'lightgrey')
-        self.run_selection.on_submit(self.submit_run)
+    	    self.run_ax = plt.axes([0.3, 0.9, 0.5, 0.1])
+    	    self.run_selection = TextBox(self.run_ax, 'Run', initial = str(self.parent.run), color = 'white',  hovercolor = 'lightgrey')
+    	    self.run_selection.on_submit(self.submit_run)
 
-        self.entry_ax = plt.axes([0.3, 0.8, 0.5, 0.1])
-        self.entry_selection = TextBox(self.entry_ax, 'Entry', initial = str(self.parent.entry), color = 'white',  hovercolor = 'lightgrey')
-        self.entry_selection.on_submit(self.submit_entry)
+    	    self.entry_ax = plt.axes([0.3, 0.8, 0.5, 0.1])
+    	    self.entry_selection = TextBox(self.entry_ax, 'Entry', initial = str(self.parent.entry), color = 'white',  hovercolor = 'lightgrey')
+    	    self.entry_selection.on_submit(self.submit_entry)
 
-        self.event_ax = plt.axes([0.3, 0.7, 0.5, 0.1])
-        self.event_selection = TextBox(self.event_ax, 'Event', initial = str(self.parent.event_analyzer.header.event_number), color = 'white',  hovercolor = 'lightgrey')
-        #self.event_selection.on_submit(self.parent.set_event)
-        self.event_selection.on_submit(self.submit_event)
+    	    self.event_ax = plt.axes([0.3, 0.7, 0.5, 0.1])
+    	    self.event_selection = TextBox(self.event_ax, 'Event', initial = str(self.parent.event_analyzer.header.event_number), color = 'white',  hovercolor = 'lightgrey')
+    	    #self.event_selection.on_submit(self.parent.set_event)
+    	    self.event_selection.on_submit(self.submit_event)
 
-        self.set_values()
+    	    self.set_values()
 
-        plt.ion()
-        self.fig.show()
+    	    plt.ion()
+    	    self.fig.show()
 
-    def submit_event(self, event):
-        self.parent.set_event(event)
-        self.set_values()
+    	def submit_event(self, event):
+    	    try:
+    	        self.parent.set_event(event)
+    	        self.set_values()
+    	    except:
+    	        self.event_selection.color = 'red'
+    	        pass
 
-    def submit_entry(self, entry):
-        self.parent.set_entry(entry)
-        self.set_values()
+    	def submit_entry(self, entry):
+    	    try:
+    	        self.parent.set_entry(entry)
+    	        self.set_values()
+    	    except:
+    	        self.entry_selection.color = 'red'
 
-    def submit_run(self, run):
-        self.parent.set_run(run)
-        self.set_values()
+    	def submit_run(self, run):
+    	    try:
+    	        self.parent.set_run(run)
+    	        self.set_values()
+    	    except:
+    	        self.run_selection.color = 'red'
 
-    def set_values(self):
-        self.run_selection.set_val(str(self.parent.run))
-        self.entry_selection.set_val(str(self.parent.entry))
-        self.event_selection.set_val(str(self.parent.event_analyzer.header.event_number))
+    	def set_values(self):
+    	    self.run_selection.set_val(str(self.parent.run))
+    	    self.entry_selection.set_val(str(self.parent.entry))
+    	    self.event_selection.set_val(str(self.parent.event_analyzer.header.event_number))
+
+    	    for selection in [self.run_selection, self.entry_selection, self.event_selection]:
+    	        selection.color = 'white'
