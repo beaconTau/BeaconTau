@@ -34,7 +34,7 @@ except ImportError:
 
 pybind11_include_dir = pybind11.get_include()
 libbeacon_dir = tempfile.TemporaryDirectory()
-libbeacon_version_tag = "0.1.5"
+libbeacon_version_tag = "0.1.6"
 
 
 class BeaconTauClean(clean):
