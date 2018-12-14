@@ -89,6 +89,13 @@ From there start `python`
 And you should be good to go.
 Remember that you will need to do `source BeaconTau-env/bin/activate` each time you want to use this python module!
 
+## To use with Jupyter Notebooks:
+In addition to installing BeaconTau, you need to build an ipython kernel that you can load in a Jupyter Notebook. The example below installs a ipython kernel based on your conda install "Beacon" and  accesible in jupyter as "Python (Beacon)"
+
+source activate Beacon
+conda install ipykernel 
+python -m ipykernel install --user --name Beacon --display-name "Python (Beacon)"
+
 
 ## Version history
 
